@@ -30,6 +30,13 @@ import { initLanguageExtras, configureSnippets } from './features/languageExtras
 import { initErrorLens } from './features/errorLens'
 import { initEnvMask, toggleEnvReveal } from './features/envMask'
 import { showTodos } from './features/todos'
+import { initDiffView, openGitDiff } from './features/diffView'
+import { initMergeConflict } from './features/mergeConflict'
+import { initProjectLint, formatActiveDocument, eslintFixAll } from './features/projectLint'
+import { initGitBlame, toggleGitBlame } from './features/gitBlame'
+import { initSpellCheck } from './features/spellCheck'
+import { initLivePreview, toggleLivePreview, previewCurrentFile } from './features/livePreview'
+import { initApiClient, newRequestFile } from './features/apiClient'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -48,6 +55,13 @@ async function boot(): Promise<void> {
   initLanguageExtras()
   initErrorLens()
   initEnvMask()
+  initDiffView()
+  initMergeConflict()
+  initProjectLint()
+  initGitBlame()
+  initSpellCheck()
+  initLivePreview()
+  initApiClient()
   initUpdater()
   await initTerminal()
   if (store.settings.emmet) void enableEmmet()
@@ -105,7 +119,8 @@ function registerAllCommands(): void {
     { id: 'theme.pick', title: 'Color Theme', category: 'Preferences', keybinding: 'Ctrl+K Ctrl+T', run: pickTheme },
     { id: 'editor.selectLanguage', title: 'Change Language Mode', category: 'Editor', run: pickLanguage },
     { id: 'editor.gotoLine', title: 'Go to Line/Column…', category: 'Editor', run: gotoLinePrompt },
-    { id: 'editor.formatDocument', title: 'Format Document', category: 'Editor', run: () => bus.emit('editor:action', 'editor.action.formatDocument') },
+    { id: 'editor.formatDocument', title: 'Format Document', category: 'Editor', keybinding: 'Shift+Alt+F', run: formatActiveDocument },
+    { id: 'lint.fixAll', title: 'ESLint: Fix All Auto-fixable Problems', category: 'Editor', run: eslintFixAll },
     { id: 'editor.toggleWordWrap', title: 'Toggle Word Wrap', category: 'View', run: () => store.updateSettings({ wordWrap: store.settings.wordWrap === 'on' ? 'off' : 'on' }) },
     { id: 'editor.toggleMinimap', title: 'Toggle Minimap', category: 'View', run: () => store.updateSettings({ minimap: !store.settings.minimap }) },
     { id: 'editor.toggleIndent', title: 'Toggle Tabs / Spaces', category: 'Editor', run: () => store.updateSettings({ insertSpaces: !store.settings.insertSpaces }) },
@@ -122,6 +137,11 @@ function registerAllCommands(): void {
     { id: 'env.toggleReveal', title: 'Toggle .env Value Masking', category: 'Editor', run: toggleEnvReveal },
     { id: 'git.branches', title: 'Checkout / Switch Branch', category: 'Git', run: switchBranch },
     { id: 'git.history', title: 'Commit History', category: 'Git', run: showGitHistory },
+    { id: 'git.openChanges', title: 'Open Changes (diff vs HEAD)', category: 'Git', run: () => openGitDiff() },
+    { id: 'git.toggleBlame', title: 'Toggle Git Blame', category: 'Git', run: toggleGitBlame },
+    { id: 'preview.toggle', title: 'Toggle Live Preview', category: 'View', run: toggleLivePreview },
+    { id: 'preview.thisFile', title: 'Live Preview: This HTML File', category: 'View', run: previewCurrentFile },
+    { id: 'http.newFile', title: 'New HTTP Request File', category: 'Tools', run: newRequestFile },
 
     { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', keybinding: 'Ctrl+K Ctrl+S', run: openKeymapEditor },
     { id: 'keybindings.open', title: 'Open Keyboard Shortcuts', category: 'Preferences', run: openKeymapEditor },
@@ -444,6 +464,12 @@ function renderRecent(): void {
     b.addEventListener('click', () => openFolder(b.dataset.path))
   })
 }
+
+// Monaco rejects superseded worker requests with a "Canceled" error — harmless.
+window.addEventListener('unhandledrejection', (e) => {
+  const r = e.reason
+  if (r && (r.name === 'Canceled' || r.message === 'Canceled')) e.preventDefault()
+})
 
 boot().catch((err) => {
   console.error(err)

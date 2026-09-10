@@ -171,6 +171,212 @@
   opacity: 0.6;
 }
 
+/* ---------- git diff / live preview / api response ---------- */
+#diff-view,
+#live-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.dv-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.dv-actions {
+  display: flex;
+  gap: 6px;
+}
+.dv-actions button {
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+}
+.dv-actions .dv-close {
+  border: none;
+  font-family: var(--icon-font);
+  font-size: 10px;
+}
+.dv-actions button:hover {
+  background: var(--line-highlight);
+  color: var(--fg);
+}
+.dv-host {
+  flex: 1;
+  min-height: 0;
+}
+
+.lp-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+.lp-bar button {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--fg-muted);
+  font-family: var(--icon-font);
+  font-size: 13px;
+}
+.lp-bar button:hover {
+  background: var(--line-highlight);
+  color: var(--fg);
+}
+.lp-url {
+  flex: 1;
+  height: 26px;
+  font-size: 12px;
+}
+.lp-device {
+  height: 26px;
+  font-size: 12px;
+}
+.lp-stage {
+  flex: 1;
+  position: relative;
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+.lp-frame {
+  position: absolute;
+  inset: 0;
+}
+.lp-msg {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  color: var(--error);
+  font-size: 13px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+#api-response {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 44%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+}
+#editor-host.ar-open #monaco {
+  right: 44%;
+}
+.ar-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.ar-status {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+}
+.ar-status.ar-ok {
+  color: var(--ok);
+}
+.ar-status.ar-warn {
+  color: var(--warn);
+}
+.ar-status.ar-fail {
+  color: var(--error);
+}
+.ar-meta {
+  flex: 1;
+  color: var(--fg-faint);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#ar-close {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--fg-faint);
+  font-family: var(--icon-font);
+  font-size: 10px;
+}
+#ar-close:hover {
+  background: var(--line-highlight);
+  color: var(--fg);
+}
+.ar-body {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 14px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 12px;
+}
+.ar-body pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ar-json {
+  color: var(--fg);
+}
+.ar-err {
+  color: var(--error);
+}
+.ar-headers {
+  margin-bottom: 10px;
+  color: var(--fg-muted);
+}
+.ar-headers summary {
+  cursor: pointer;
+  color: var(--fg-faint);
+  font-size: 11px;
+}
+.ar-headers .arh-k {
+  color: var(--syntax-func, var(--accent));
+}
+
+/* merge conflict + blame decorations */
+.mc-current {
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+}
+.mc-incoming {
+  background: color-mix(in srgb, var(--info) 12%, transparent);
+}
+.mc-marker {
+  background: color-mix(in srgb, var(--fg-faint) 22%, transparent);
+}
+.gb-note {
+  color: var(--fg-faint);
+  font-style: italic;
+  opacity: 0.8;
+  font-size: 0.88em;
+}
+
 /* ---------- markdown preview ---------- */
 #editor-host.md-open #monaco {
   right: 46%;

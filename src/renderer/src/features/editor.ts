@@ -299,7 +299,8 @@ async function saveTab(t: Tab, as = false): Promise<void> {
     }
     if (store.settings.formatOnSave) {
       try {
-        await editor.getAction('editor.action.formatDocument')?.run()
+        const { formatActiveDocument } = await import('./projectLint')
+        await formatActiveDocument()
       } catch {
         /* no formatter for this language */
       }

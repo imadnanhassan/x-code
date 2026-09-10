@@ -109,7 +109,52 @@ const api = {
     branches: (cwd: string): Promise<{ current: string; local: string[]; remote: string[] }> =>
       ipcRenderer.invoke('git:branches', { cwd }),
     checkout: (cwd: string, branch: string, create?: boolean): Promise<{ ok: boolean; message: string }> =>
-      ipcRenderer.invoke('git:checkout', { cwd, branch, create })
+      ipcRenderer.invoke('git:checkout', { cwd, branch, create }),
+    showHead: (cwd: string, path: string): Promise<string | null> =>
+      ipcRenderer.invoke('git:showHead', { cwd, path }),
+    blame: (cwd: string, path: string): Promise<{ ok: boolean; lines: any[] }> =>
+      ipcRenderer.invoke('git:blame', { cwd, path })
+  },
+
+  lint: {
+    available: (root: string): Promise<{ eslint: boolean; prettier: boolean }> =>
+      ipcRenderer.invoke('lint:available', { root }),
+    eslint: (root: string, filePath: string, content: string): Promise<{ ok: boolean; messages: any[]; error?: string }> =>
+      ipcRenderer.invoke('lint:eslint', { root, filePath, content }),
+    eslintFixAll: (root: string, filePath: string, content: string): Promise<{ ok: boolean; content?: string }> =>
+      ipcRenderer.invoke('lint:eslintFixAll', { root, filePath, content }),
+    prettier: (root: string, filePath: string, content: string): Promise<{ ok: boolean; content?: string; error?: string }> =>
+      ipcRenderer.invoke('format:prettier', { root, filePath, content })
+  },
+
+  http: {
+    send: (req: {
+      method: string
+      url: string
+      headers?: Record<string, string>
+      body?: string
+      timeoutMs?: number
+    }): Promise<any> => ipcRenderer.invoke('http:send', req)
+  },
+
+  spell: {
+    check: (words: string[]): Promise<{ ok: boolean; bad: string[]; error?: string }> =>
+      ipcRenderer.invoke('spell:check', { words }),
+    suggest: (word: string): Promise<string[]> => ipcRenderer.invoke('spell:suggest', { word }),
+    add: (word: string): Promise<boolean> => ipcRenderer.invoke('spell:add', { word })
+  },
+
+  preview: {
+    open: (url: string): Promise<{ ok: boolean }> => ipcRenderer.invoke('preview:open', { url }),
+    bounds: (b: { x: number; y: number; width: number; height: number }) =>
+      ipcRenderer.send('preview:bounds', b),
+    hide: () => ipcRenderer.send('preview:hide'),
+    reload: () => ipcRenderer.send('preview:reload'),
+    navigate: (dir: 'back' | 'forward') => ipcRenderer.send('preview:navigate', dir),
+    openExternal: () => ipcRenderer.send('preview:open-external'),
+    dispose: () => ipcRenderer.send('preview:dispose'),
+    onState: (cb: Listener<{ url?: string; loading?: boolean; canGoBack?: boolean; error?: string }>) =>
+      on('preview:state', cb)
   },
 
   update: {

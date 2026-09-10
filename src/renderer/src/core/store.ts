@@ -25,6 +25,10 @@ export interface Settings {
   pathCompletion: boolean
   errorLens: boolean
   maskEnvValues: boolean
+  useProjectLinters: boolean
+  gitBlame: boolean
+  spellCheck: boolean
+  lastPreviewUrl: string
   formatOnPaste: boolean
   organizeImportsOnSave: boolean
   trimTrailingWhitespace: boolean
@@ -64,6 +68,10 @@ export const DEFAULT_SETTINGS: Settings = {
   pathCompletion: true,
   errorLens: true,
   maskEnvValues: false,
+  useProjectLinters: true,
+  gitBlame: false,
+  spellCheck: false,
+  lastPreviewUrl: '',
   formatOnPaste: true,
   organizeImportsOnSave: false,
   trimTrailingWhitespace: false,

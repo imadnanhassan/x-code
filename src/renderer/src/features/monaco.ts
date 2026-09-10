@@ -32,7 +32,7 @@ const EXT_LANG: Record<string, string> = {
   yml: 'yaml', yaml: 'yaml', toml: 'ini', ini: 'ini', cfg: 'ini', conf: 'ini',
   sql: 'sql', graphql: 'graphql', gql: 'graphql',
   lua: 'lua', dart: 'dart', r: 'r', pl: 'perl',
-  dockerfile: 'dockerfile', xml: 'xml', svg: 'xml',
+  dockerfile: 'dockerfile', xml: 'xml', svg: 'xml', http: 'http', rest: 'http',
   vue: 'html', svelte: 'html', astro: 'html',
   clj: 'clojure', cljs: 'clojure', fs: 'fsharp', scala: 'scala',
   tf: 'hcl', hcl: 'hcl', proto: 'proto', ex: 'elixir', exs: 'elixir'

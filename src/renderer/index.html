@@ -130,6 +130,41 @@
                 </div>
                 <div class="md-preview-body markdown-body"></div>
               </div>
+              <div id="api-response" hidden>
+                <div class="ar-head">
+                  <span class="ar-status">RESPONSE</span>
+                  <span class="ar-meta"></span>
+                  <button id="ar-close" title="Close">&#xE8BB;</button>
+                </div>
+                <div class="ar-body"></div>
+              </div>
+              <div id="diff-view" hidden>
+                <div class="dv-head">
+                  <span class="dv-title"></span>
+                  <div class="dv-actions">
+                    <button class="dv-openfile">Open File</button>
+                    <button class="dv-close" title="Close">&#xE8BB;</button>
+                  </div>
+                </div>
+                <div class="dv-host"></div>
+              </div>
+              <div id="live-preview" hidden>
+                <div class="lp-bar">
+                  <button data-lp="back" title="Back">&#xE72B;</button>
+                  <button data-lp="fwd" title="Forward">&#xE72A;</button>
+                  <button data-lp="reload" title="Reload">&#xE72C;</button>
+                  <input class="lp-url" type="text" spellcheck="false" placeholder="http://localhost:3000" />
+                  <select class="lp-device">
+                    <option value="fill">Responsive</option>
+                    <option value="390x844">Mobile 390</option>
+                    <option value="820x1180">Tablet 820</option>
+                    <option value="1280x800">Desktop 1280</option>
+                  </select>
+                  <button data-lp="external" title="Open in browser">&#xE8A7;</button>
+                  <button data-lp="close" title="Close">&#xE8BB;</button>
+                </div>
+                <div class="lp-stage"><div class="lp-frame"></div><div class="lp-msg"></div></div>
+              </div>
             </div>
           </div>
 

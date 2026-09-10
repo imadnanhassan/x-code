@@ -189,4 +189,54 @@ export function registerGit(): void {
     const r = await git(o.cwd, args)
     return { ok: r.code === 0, message: (r.stderr || r.stdout).trim() }
   })
+
+  ipcMain.handle('git:showHead', async (_e, o: Opts & { path: string }) => {
+    const root = (await git(o.cwd, ['rev-parse', '--show-toplevel'])).stdout.trim()
+    if (!root) return null
+    const rel = o.path
+      .replace(/\\/g, '/')
+      .replace(new RegExp('^' + root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\/g, '/') + '/?', 'i'), '')
+    const r = await git(o.cwd, ['show', `HEAD:${rel}`], 15000)
+    return r.code === 0 ? r.stdout : null
+  })
+
+  ipcMain.handle('git:blame', async (_e, o: Opts & { path: string }) => {
+    const r = await git(o.cwd, ['blame', '--porcelain', '--', o.path], 30000)
+    if (r.code !== 0) return { ok: false, lines: [] as any[] }
+    const commits = new Map<string, { author: string; time: number; summary: string }>()
+    const out: { line: number; hash: string; author: string; time: number; summary: string }[] = []
+    let lineNo = 0
+    let curHash = ''
+    for (const raw of r.stdout.split('\n')) {
+      const head = raw.match(/^([0-9a-f]{40}) \d+ (\d+)(?: \d+)?$/)
+      if (head) {
+        curHash = head[1]
+        lineNo = parseInt(head[2], 10)
+        if (!commits.has(curHash)) commits.set(curHash, { author: '', time: 0, summary: '' })
+        continue
+      }
+      const c = commits.get(curHash)
+      if (c) {
+        if (raw.startsWith('author ')) c.author = raw.slice(7)
+        else if (raw.startsWith('author-time ')) c.time = parseInt(raw.slice(12), 10) * 1000
+        else if (raw.startsWith('summary ')) c.summary = raw.slice(8)
+      }
+      if (raw.startsWith('\t')) {
+        const info = commits.get(curHash)!
+        out.push({
+          line: lineNo,
+          hash: curHash.slice(0, 8),
+          author: /^0{40}$/.test(curHash) ? 'Uncommitted' : info.author,
+          time: info.time,
+          summary: info.summary
+        })
+      }
+    }
+    return { ok: true, lines: out }
+  })
+
+  ipcMain.handle('git:diffNames', async (_e, o: Opts & { ref?: string }) => {
+    const r = await git(o.cwd, ['diff', '--name-only', o.ref || 'HEAD'])
+    return r.code === 0 ? r.stdout.split('\n').filter(Boolean) : []
+  })
 }

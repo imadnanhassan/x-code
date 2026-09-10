@@ -7,6 +7,10 @@ import { registerPty, killAllPty } from './pty'
 import { registerGit } from './git'
 import { registerHistory } from './history'
 import { registerTasks } from './tasks'
+import { registerLint } from './lint'
+import { registerHttp } from './http'
+import { registerSpell } from './spell'
+import { registerPreview } from './preview'
 
 const { autoUpdater } = electronUpdater
 const isDev = !app.isPackaged
@@ -165,7 +169,11 @@ app.whenReady().then(() => {
   registerGit()
   registerHistory()
   registerTasks()
+  registerLint()
+  registerHttp()
+  registerSpell()
   createWindow()
+  registerPreview(() => mainWindow)
   setupAutoUpdate()
 
   app.on('activate', () => {

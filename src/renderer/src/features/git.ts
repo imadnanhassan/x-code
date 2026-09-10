@@ -199,7 +199,10 @@ function groupEl(title: string, files: GitFile[], staged: boolean): HTMLElement 
       `</span>` +
       `<span class="git-st git-st-${letter.toLowerCase()}" title="${letter}">${letter}</span>`
     row.querySelector('.git-name')!.addEventListener('click', () => {
-      if (f.worktree !== 'D') openPath(absPath(f.path))
+      if (f.worktree === 'D') return
+      const abs = absPath(f.path)
+      if (f.untracked || f.index === 'A') openPath(abs)
+      else void import('./diffView').then((m) => m.openGitDiff(abs))
     })
     row.querySelector('[data-a="stage"]')?.addEventListener('click', (e) => { e.stopPropagation(); act('stage', [f.path]) })
     row.querySelector('[data-a="unstage"]')?.addEventListener('click', (e) => { e.stopPropagation(); act('unstage', [f.path]) })
