@@ -1,4 +1,4 @@
-import { monaco } from './monaco'
+import { monaco, applyProjectTsconfig } from './monaco'
 import { store } from '../core/store'
 import { bus, Ev } from '../core/bus'
 import { openPath } from './editor'
@@ -260,13 +260,20 @@ export function initLanguageExtras(): void {
 
   void loadUserSnippets()
   void loadEnvKeys()
-  bus.on(Ev.workspaceOpened, () => {
+  if (store.rootPath) void applyProjectTsconfig(store.rootPath)
+  bus.on(Ev.workspaceOpened, (root: string) => {
     void loadUserSnippets()
     void loadEnvKeys()
+    void applyProjectTsconfig(root || store.rootPath || '')
   })
   bus.on(Ev.fileSaved, (p: string) => {
-    if (typeof p === 'string' && p.endsWith('.xcode/snippets.json')) void loadUserSnippets()
-    if (typeof p === 'string' && /\.env(\.|$)/.test(p.split(/[\\/]/).pop() || '')) void loadEnvKeys()
+    if (typeof p !== 'string') return
+    const base = p.split(/[\\/]/).pop() || ''
+    if (p.endsWith('.xcode/snippets.json') || p.endsWith('.xcode\\snippets.json')) void loadUserSnippets()
+    if (/\.env(\.|$)/.test(base)) void loadEnvKeys()
+    if (base === 'tsconfig.json' || base === 'jsconfig.json') {
+      if (store.rootPath) void applyProjectTsconfig(store.rootPath)
+    }
   })
 }
 

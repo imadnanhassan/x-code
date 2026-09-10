@@ -63,7 +63,7 @@ export const DEFAULT_SETTINGS: Settings = {
   snippets: true,
   pathCompletion: true,
   errorLens: true,
-  maskEnvValues: true,
+  maskEnvValues: false,
   formatOnPaste: true,
   organizeImportsOnSave: false,
   trimTrailingWhitespace: false,

@@ -57,9 +57,23 @@ export function languageForPath(path: string): string {
   return EXT_LANG[ext] || 'plaintext'
 }
 
+type CO = monaco.languages.typescript.CompilerOptions
+let baseCompilerOptions: CO = {}
+
+// Monaco's TS worker can't see node_modules, so module-resolution diagnostics are
+// just noise for real projects — suppress those codes, keep genuine type errors.
+const MODULE_NOISE_CODES = [
+  2307, // Cannot find module 'X' or its corresponding type declarations
+  2792, // Cannot find module 'X'. Did you mean to set 'moduleResolution' to 'node'?
+  2688, // Cannot find type definition file for 'X'
+  7016, // Could not find a declaration file for module 'X'
+  2306, // File 'X' is not a module
+  6142 // Module was resolved but '--jsx' is not set
+]
+
 export function configureLanguages(): void {
   const ts = monaco.languages.typescript
-  const common = {
+  baseCompilerOptions = {
     target: ts.ScriptTarget.ESNext,
     module: ts.ModuleKind.ESNext,
     moduleResolution: ts.ModuleResolutionKind.NodeJs,
@@ -67,12 +81,15 @@ export function configureLanguages(): void {
     allowJs: true,
     jsx: ts.JsxEmit.ReactJSX,
     esModuleInterop: true,
+    allowSyntheticDefaultImports: true,
+    resolveJsonModule: true,
     skipLibCheck: true
   }
-  ts.typescriptDefaults.setCompilerOptions(common)
-  ts.javascriptDefaults.setCompilerOptions(common)
-  ts.typescriptDefaults.setDiagnosticsOptions({ noSemanticValidation: false, noSyntaxValidation: false })
-  ts.javascriptDefaults.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: false })
+  ts.typescriptDefaults.setCompilerOptions(baseCompilerOptions)
+  ts.javascriptDefaults.setCompilerOptions(baseCompilerOptions)
+  const diag = { noSemanticValidation: false, noSyntaxValidation: false, diagnosticCodesToIgnore: MODULE_NOISE_CODES }
+  ts.typescriptDefaults.setDiagnosticsOptions(diag)
+  ts.javascriptDefaults.setDiagnosticsOptions({ ...diag, noSemanticValidation: true })
 
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
     validate: true,
@@ -80,6 +97,54 @@ export function configureLanguages(): void {
     schemas: [],
     trailingCommas: 'warning'
   })
+}
+
+/** Fold the workspace's tsconfig/jsconfig compilerOptions into the TS worker. */
+export async function applyProjectTsconfig(root: string): Promise<void> {
+  const ts = monaco.languages.typescript
+  let raw = ''
+  for (const name of ['tsconfig.json', 'jsconfig.json']) {
+    try {
+      raw = await window.xcode.fs.read(root.replace(/[\\/]$/, '') + '/' + name)
+      break
+    } catch {
+      /* next */
+    }
+  }
+  if (!raw) {
+    ts.typescriptDefaults.setCompilerOptions(baseCompilerOptions)
+    return
+  }
+  let cfg: any
+  try {
+    cfg = JSON.parse(raw.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1').replace(/,(\s*[}\]])/g, '$1'))
+  } catch {
+    return
+  }
+  const co = cfg.compilerOptions || {}
+  const merged: CO = { ...baseCompilerOptions }
+
+  const jsxMap: Record<string, number> = {
+    react: ts.JsxEmit.React,
+    'react-jsx': ts.JsxEmit.ReactJSX,
+    'react-jsxdev': ts.JsxEmit.ReactJSXDev,
+    'react-native': ts.JsxEmit.ReactNative,
+    preserve: ts.JsxEmit.Preserve
+  }
+  if (typeof co.jsx === 'string' && jsxMap[co.jsx] !== undefined) merged.jsx = jsxMap[co.jsx]
+  if (typeof co.baseUrl === 'string') merged.baseUrl = co.baseUrl
+  if (co.paths && typeof co.paths === 'object') merged.paths = co.paths
+  if (typeof co.strict === 'boolean') merged.strict = co.strict
+  if (typeof co.experimentalDecorators === 'boolean') merged.experimentalDecorators = co.experimentalDecorators
+  if (typeof co.jsxImportSource === 'string') merged.jsxImportSource = co.jsxImportSource
+  if (typeof co.target === 'string') {
+    const t = (ts.ScriptTarget as any)[co.target.replace(/^es/i, 'ES').replace('esnext', 'ESNext')]
+    if (t !== undefined) merged.target = t
+  }
+  if (Array.isArray(co.lib)) merged.lib = co.lib
+
+  ts.typescriptDefaults.setCompilerOptions(merged)
+  ts.javascriptDefaults.setCompilerOptions(merged)
 }
 
 let emmetReady = false
