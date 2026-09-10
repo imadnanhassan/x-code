@@ -1,5 +1,6 @@
-// Generates build/icon.ico (Windows) + build/icon.png (Linux/macOS source)
-// from an inline SVG. Run: npm run gen:icon
+// Generates build/icon.ico + build/icon.png (app / installer / taskbar)
+// and site/favicon.png + site/icon.png (website) from one inline SVG.
+// Run: npm run gen:icon
 import { Resvg } from '@resvg/resvg-js'
 import pngToIco from 'png-to-ico'
 import { mkdirSync, writeFileSync } from 'fs'
@@ -7,38 +8,51 @@ import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const outDir = resolve(root, 'build')
-mkdirSync(outDir, { recursive: true })
+mkdirSync(resolve(root, 'build'), { recursive: true })
+mkdirSync(resolve(root, 'site'), { recursive: true })
 
+// Rounded-square badge, orange gradient, white "</>" — matches the in-app logo.
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#8ab4ff"/>
-      <stop offset="1" stop-color="#5b8def"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff7a45"/>
+      <stop offset=".55" stop-color="#f0491e"/>
+      <stop offset="1" stop-color="#d83c12"/>
     </linearGradient>
-    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0b1020" flood-opacity="0.35"/>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".28"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#5a1c0a" flood-opacity=".35"/>
     </filter>
   </defs>
-  <rect x="40" y="40" width="432" height="432" rx="104" fill="url(#g)" filter="url(#s)"/>
-  <g stroke="#0f1220" stroke-width="52" stroke-linecap="round">
-    <line x1="168" y1="168" x2="344" y2="344"/>
-    <line x1="344" y1="168" x2="168" y2="344"/>
+
+  <g filter="url(#ds)">
+    <rect x="46" y="46" width="420" height="420" rx="108" fill="url(#bg)"/>
+    <rect x="46" y="46" width="420" height="420" rx="108" fill="url(#shine)"/>
+    <rect x="47.5" y="47.5" width="417" height="417" rx="106.5" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="3"/>
+  </g>
+
+  <g fill="none" stroke="#ffffff" stroke-width="42" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="196,168 132,256 196,344"/>
+    <polyline points="316,168 380,256 316,344"/>
+    <line x1="292" y1="150" x2="220" y2="362"/>
   </g>
 </svg>`
 
-function renderPng(size) {
-  const r = new Resvg(svg, { fitTo: { mode: 'width', value: size }, background: 'rgba(0,0,0,0)' })
-  return r.render().asPng()
+function png(size) {
+  return new Resvg(svg, { fitTo: { mode: 'width', value: size }, background: 'rgba(0,0,0,0)' })
+    .render()
+    .asPng()
 }
 
-// Source PNG for Linux/macOS and as ICO input
-const png512 = renderPng(512)
-writeFileSync(resolve(outDir, 'icon.png'), png512)
+const png512 = png(512)
+writeFileSync(resolve(root, 'build/icon.png'), png512)
+writeFileSync(resolve(root, 'site/icon.png'), png512)
+writeFileSync(resolve(root, 'site/favicon.png'), png(64))
 
-const icoSizes = [16, 24, 32, 48, 64, 128, 256]
-const icoBuffers = icoSizes.map(renderPng)
-const ico = await pngToIco(icoBuffers)
-writeFileSync(resolve(outDir, 'icon.ico'), ico)
+const sizes = [16, 24, 32, 48, 64, 128, 256]
+writeFileSync(resolve(root, 'build/icon.ico'), await pngToIco(sizes.map(png)))
 
-console.log('wrote build/icon.png (512) and build/icon.ico (' + icoSizes.join(',') + ')')
+console.log('wrote build/icon.{png,ico}, site/icon.png, site/favicon.png (ico: ' + sizes.join(',') + ')')

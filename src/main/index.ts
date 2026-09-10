@@ -4,6 +4,7 @@ import { join } from 'path'
 import electronUpdater from 'electron-updater'
 import { registerIpc } from './ipc'
 import { registerPty, killAllPty } from './pty'
+import { registerGit } from './git'
 
 const { autoUpdater } = electronUpdater
 const isDev = !app.isPackaged
@@ -107,20 +108,38 @@ function registerWindowIpc(): void {
   })
 }
 
+function normalizeNotes(n: unknown): string {
+  if (!n) return ''
+  if (typeof n === 'string') return n
+  if (Array.isArray(n)) return n.map((x: any) => (x && x.note) || '').join('\n\n')
+  return ''
+}
+
 function setupAutoUpdate(): void {
   if (isDev) return
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
   autoUpdater.on('update-available', (info) =>
-    mainWindow?.webContents.send('update:available', info.version)
+    mainWindow?.webContents.send('update:available', {
+      version: info.version,
+      notes: normalizeNotes((info as any).releaseNotes)
+    })
+  )
+  autoUpdater.on('download-progress', (p) =>
+    mainWindow?.webContents.send('update:progress', { percent: Math.round(p.percent) })
   )
   autoUpdater.on('update-downloaded', (info) =>
-    mainWindow?.webContents.send('update:downloaded', info.version)
+    mainWindow?.webContents.send('update:downloaded', {
+      version: info.version,
+      notes: normalizeNotes((info as any).releaseNotes)
+    })
   )
   autoUpdater.on('error', (err) => {
     const msg = err?.message || String(err)
-    // A zip-only local build has no app-update.yml — that's expected, stay quiet.
-    if (!msg.includes('app-update.yml')) console.error('[xcode] auto-update:', msg)
+    // Expected/benign cases: no app-update.yml (zip-only build), or no published
+    // release yet (404/406 from the releases feed). Don't spam the console.
+    const benign = /app-update\.yml|Unable to find latest version|HttpError: 40[46]|ENOTFOUND|ETIMEDOUT/i
+    if (!benign.test(msg)) console.error('[xcode] auto-update:', msg)
   })
   ipcMain.on('update:install', () => autoUpdater.quitAndInstall())
   ipcMain.handle('update:check', async () => {
@@ -141,6 +160,7 @@ app.whenReady().then(() => {
   registerWindowIpc()
   registerIpc(() => mainWindow)
   registerPty(() => mainWindow)
+  registerGit()
   createWindow()
   setupAutoUpdate()
 

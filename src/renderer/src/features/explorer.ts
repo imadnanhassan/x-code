@@ -15,6 +15,7 @@ const expanded = new Set<string>()
 const childCache = new Map<string, Entry[]>()
 let treeRoot: HTMLElement
 let selectedPath: string | null = null
+let gitDeco = new Map<string, { i: string; w: string }>()
 
 const $tree = () => document.getElementById('explorer-tree')!
 const $rootName = () => document.getElementById('explorer-root-name')!
@@ -29,6 +30,10 @@ export function initExplorer(): void {
   bus.on('explorer:reveal', (p: string) => revealPath(p))
   bus.on(Ev.workspaceOpened, () => renderRoot())
   bus.on('explorer:refresh', () => refresh())
+  bus.on('git:decorations', (m: Map<string, { i: string; w: string }>) => {
+    gitDeco = m
+    applyGitDeco()
+  })
 
   treeRoot.addEventListener('contextmenu', (e) => {
     const row = (e.target as HTMLElement).closest<HTMLElement>('.tree-row')
@@ -76,6 +81,37 @@ async function renderRoot(): Promise<void> {
   container.className = 'tree'
   treeRoot.appendChild(container)
   await renderLevel(container, store.rootPath, 0)
+  applyGitDeco()
+}
+
+function applyGitDeco(): void {
+  if (!treeRoot) return
+  treeRoot.querySelectorAll<HTMLElement>('.tree-row').forEach((row) => {
+    const p = row.dataset.path!.replace(/\\/g, '/')
+    row.classList.remove('git-m', 'git-a', 'git-u', 'git-d', 'git-r')
+    const nameEl = row.querySelector('.tree-name') as HTMLElement | null
+    row.querySelector('.tree-git')?.remove()
+    if (row.dataset.dir === '1') {
+      // mark a folder if any descendant is changed
+      let has = false
+      for (const key of gitDeco.keys()) {
+        if (key.startsWith(p + '/')) { has = true; break }
+      }
+      if (has) row.classList.add('git-m')
+      return
+    }
+    const d = gitDeco.get(p)
+    if (!d) return
+    const letter = d.i === '?' || d.w === '?' ? 'U' : (d.i.trim() || d.w.trim() || 'M')
+    const cls = 'git-' + letter.toLowerCase()
+    row.classList.add(cls)
+    if (nameEl) {
+      const badge = document.createElement('span')
+      badge.className = 'tree-git ' + cls
+      badge.textContent = letter
+      nameEl.after(badge)
+    }
+  })
 }
 
 async function renderLevel(parent: HTMLElement, dir: string, depth: number): Promise<void> {

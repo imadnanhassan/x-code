@@ -21,6 +21,7 @@ import { enableEmmet } from './features/monaco'
 import { initMarkdownPreview, toggleMarkdownPreview } from './features/markdownPreview'
 import { importVSCodeSettings } from './features/vscodeImport'
 import { initUpdater, checkForUpdatesNow } from './features/updater'
+import { initGit } from './features/git'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -33,6 +34,7 @@ async function boot(): Promise<void> {
   initSettingsPanel()
   initStatusbar()
   initMarkdownPreview()
+  initGit()
   initUpdater()
   await initTerminal()
   if (store.settings.emmet) void enableEmmet()
@@ -66,6 +68,11 @@ function registerAllCommands(): void {
     { id: 'view.toggleSidebar', title: 'Toggle Sidebar', category: 'View', run: toggleSidebar },
     { id: 'view.explorer', title: 'Show Explorer', category: 'View', run: () => showView('explorer') },
     { id: 'view.search', title: 'Show Search', category: 'View', run: () => { showView('search'); focusSearch() } },
+    { id: 'view.git', title: 'Show Source Control', category: 'View', run: () => showView('git') },
+    { id: 'git.commit', title: 'Commit', category: 'Git', run: () => bus.emit('command:run', 'view.git') },
+    { id: 'git.push', title: 'Push', category: 'Git', run: () => bus.emit('git:action', 'push') },
+    { id: 'git.pull', title: 'Pull', category: 'Git', run: () => bus.emit('git:action', 'pull') },
+    { id: 'git.refresh', title: 'Refresh Source Control', category: 'Git', run: () => bus.emit('git:refresh') },
     { id: 'view.settings', title: 'Open Settings', category: 'View', run: () => { showView('settings'); focusSettings() } },
     { id: 'view.zoomIn', title: 'Zoom In', category: 'View', run: () => zoom(1) },
     { id: 'view.zoomOut', title: 'Zoom Out', category: 'View', run: () => zoom(-1) },
@@ -340,6 +347,7 @@ function showView(view: string): void {
   document.querySelectorAll<HTMLElement>('.act-btn[data-view]').forEach((b) => {
     b.classList.toggle('active', b.dataset.view === view)
   })
+  bus.emit('sidebar:view', view)
   getEditor()?.layout()
 }
 

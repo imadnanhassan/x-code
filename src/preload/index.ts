@@ -76,12 +76,28 @@ const api = {
       ipcRenderer.invoke('vscode:pick-settings')
   },
 
+  git: {
+    status: (cwd: string) => ipcRenderer.invoke('git:status', { cwd }),
+    init: (cwd: string) => ipcRenderer.invoke('git:init', { cwd }),
+    stage: (cwd: string, files: string[]) => ipcRenderer.invoke('git:stage', { cwd, files }),
+    unstage: (cwd: string, files: string[]) => ipcRenderer.invoke('git:unstage', { cwd, files }),
+    stageAll: (cwd: string) => ipcRenderer.invoke('git:stageAll', { cwd }),
+    discard: (cwd: string, files: string[], untracked: string[]) =>
+      ipcRenderer.invoke('git:discard', { cwd, files, untracked }),
+    commit: (cwd: string, message: string, amend?: boolean) =>
+      ipcRenderer.invoke('git:commit', { cwd, message, amend }),
+    push: (cwd: string) => ipcRenderer.invoke('git:push', { cwd }),
+    pull: (cwd: string) => ipcRenderer.invoke('git:pull', { cwd }),
+    log: (cwd: string, limit?: number) => ipcRenderer.invoke('git:log', { cwd, limit })
+  },
+
   update: {
     check: (): Promise<{ version?: string | null; error?: string }> =>
       ipcRenderer.invoke('update:check'),
     install: () => ipcRenderer.send('update:install'),
-    onAvailable: (cb: Listener<string>) => on('update:available', cb),
-    onDownloaded: (cb: Listener<string>) => on('update:downloaded', cb)
+    onAvailable: (cb: Listener<{ version: string; notes: string }>) => on('update:available', cb),
+    onDownloaded: (cb: Listener<{ version: string; notes: string }>) => on('update:downloaded', cb),
+    onProgress: (cb: Listener<{ percent: number }>) => on('update:progress', cb)
   },
 
   pty: {
