@@ -176,6 +176,54 @@
   .m-status { display: flex; align-items: center; gap: 14px; padding: 5px 16px; font-size: 10.5px; color: var(--muted); border-top: 1px solid var(--line-2); background: #fff; }
   .m-status .sp { margin-left: auto; }
 
+  /* ---------- detailed feature grid ---------- */
+  .feat-grid {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .feat-grid .ft {
+    background: #fff;
+    padding: 20px 22px;
+  }
+  .feat-grid .ft b {
+    display: block;
+    font-family: var(--display);
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  .feat-grid .ft span {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .feat-grid .ft code {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 0.92em;
+  }
+  .feat-grid .ft kbd {
+    font-size: 10px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 4px;
+  }
+  @media (max-width: 900px) {
+    .feat-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 620px) {
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+
   /* ---------- features ---------- */
   section { padding: 96px 0; }
   .feat-head { margin-bottom: 46px; }
@@ -442,6 +490,25 @@
         </div>
       </div>
     </div>
+
+    <div class="feat-grid">
+      <div class="ft"><b>Source Control</b><span>Stage, commit, push/pull, branch switcher &amp; history, inline diff vs HEAD, merge-conflict CodeLens, blame annotations, git status in the tree.</span></div>
+      <div class="ft"><b>Integrated terminal</b><span>Real PTY (PowerShell&nbsp;7 / bash / zsh), multiple sessions, run-task &amp; run-command palettes, "open terminal here".</span></div>
+      <div class="ft"><b>ESLint &amp; Prettier</b><span>Runs your project's own eslint / prettier from node_modules — real rules, quick fixes, fix-all, format on save.</span></div>
+      <div class="ft"><b>Live preview</b><span>A web pane beside the editor — dev-server URL or local file, reload, responsive / mobile / tablet / desktop sizes.</span></div>
+      <div class="ft"><b>API client</b><span>Write <code>.http</code> requests, hit "Send", read the response — status, timing, headers and pretty JSON — without leaving the editor.</span></div>
+      <div class="ft"><b>Emmet + snippets</b><span><code>ul&gt;li*3</code> ↹, built-in JS/TS/React snippets, and your own via <code>.xcode/snippets.json</code>.</span></div>
+      <div class="ft"><b>Problems &amp; Error Lens</b><span>All diagnostics in one panel, plus the message inline at the end of the line. TODO / FIXME scanner too.</span></div>
+      <div class="ft"><b>Markdown preview</b><span>Live side-by-side GitHub-flavoured render, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>.</span></div>
+      <div class="ft"><b>Local history</b><span>Every save is snapshotted — diff any past version and restore it in a click.</span></div>
+      <div class="ft"><b>Path &amp; env intel</b><span>Autocomplete for <code>./</code> import paths, <code>process.env.*</code> keys from your <code>.env</code>, optional value masking.</span></div>
+      <div class="ft"><b>Editable shortcuts</b><span>Every command's key binding in one table — click to rebind, with conflict detection. <kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>+<kbd>S</kbd>.</span></div>
+      <div class="ft"><b>Spell check</b><span>Comments, strings and Markdown — squiggles, suggestions, and a personal dictionary. Opt-in.</span></div>
+      <div class="ft"><b>9 themes</b><span>Xcode Dark/Light, Dracula, One Dark, Monokai, Nord, Tokyo Night, Solarized, GitHub Dark — with live preview.</span></div>
+      <div class="ft"><b>Import from VS Code</b><span>One click maps your <code>settings.json</code> — font, theme, tabs, format-on-save and more.</span></div>
+      <div class="ft"><b>Auto-update</b><span>New releases download in the background; an in-app banner installs them on restart.</span></div>
+      <div class="ft"><b>Low memory</b><span>~150–230&nbsp;MB idle. The editor engine only loads on first file; hardware acceleration is a toggle.</span></div>
+    </div>
   </div>
 </section>
 
@@ -479,7 +546,7 @@
       <details class="faq-item"><summary>Is this related to Apple's Xcode? <span class="pm">+</span></summary><div class="a">No. Xcode by DataDropX is an independent cross-platform code editor. It is not made by, endorsed by, or affiliated with Apple, and it does not build iOS/macOS apps.</div></details>
       <details class="faq-item"><summary>What platforms does it run on? <span class="pm">+</span></summary><div class="a">Windows is available now as a portable build and installer. macOS and Linux builds are in progress — star the repo to get notified.</div></details>
       <details class="faq-item"><summary>How much memory does it use? <span class="pm">+</span></summary><div class="a">Around 150–230 MB idle on a typical machine, versus ~350 MB – 1 GB+ for a full IDE. The editor engine only loads when you open a file, and hardware acceleration is a toggle.</div></details>
-      <details class="faq-item"><summary>Is the AI assistant available yet? <span class="pm">+</span></summary><div class="a">Not in the current build — it's the next feature on the roadmap. Everything else (terminal, Emmet, themes, Markdown preview, cross-file search, VS Code settings import) ships today.</div></details>
+      <details class="faq-item"><summary>Is the AI assistant available yet? <span class="pm">+</span></summary><div class="a">Not in the current build — it's the next feature on the roadmap. Everything else ships today: full source control (diff, blame, branches, conflict resolution), integrated terminal, ESLint/Prettier, live preview, an API client, Emmet &amp; snippets, Problems &amp; Error Lens, Markdown preview, local history, spell check, editable shortcuts, VS Code settings import and 9 themes.</div></details>
       <details class="faq-item"><summary>Is it free and open source? <span class="pm">+</span></summary><div class="a">Yes — MIT licensed. Source, releases and issues are on GitHub.</div></details>
       <details class="faq-item"><summary>Can I bring my VS Code settings? <span class="pm">+</span></summary><div class="a">Yes. Settings → Import VS Code Settings reads your <code>settings.json</code> and maps font, theme, tab size, word wrap, format-on-save, auto-save and more.</div></details>
     </div>

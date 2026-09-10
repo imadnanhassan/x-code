@@ -32,7 +32,21 @@ jobs:
 
       - run: npm run typecheck
 
+      - name: Generate release notes
+        shell: bash
+        run: |
+          prev=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || git rev-list --max-parents=0 HEAD)
+          echo "## Changes" > NOTES.md
+          git log "${prev}..${GITHUB_REF_NAME}" --no-merges --pretty='- %s' >> NOTES.md
+          cat NOTES.md
+
       - name: Build & publish
         run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attach release notes
+        shell: bash
+        run: gh release edit "${GITHUB_REF_NAME}" --notes-file NOTES.md --latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

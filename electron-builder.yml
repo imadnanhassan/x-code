@@ -22,6 +22,8 @@ publish:
   provider: github
   owner: imadnanhassan
   repo: x-code
+  # publish a live release directly (not a draft) so installed apps auto-update
+  releaseType: release
 win:
   target:
     - target: zip
