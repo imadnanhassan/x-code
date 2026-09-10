@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' ws: wss:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xcode</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Title bar -->
+      <header id="titlebar">
+        <div class="tb-left">
+          <div class="tb-logo" title="Xcode">X</div>
+          <nav class="tb-menu" id="tb-menu"></nav>
+        </div>
+        <div class="tb-center" id="tb-title">Xcode</div>
+        <div class="tb-right">
+          <button class="tb-btn" id="win-min" title="Minimize" aria-label="Minimize">&#xE921;</button>
+          <button class="tb-btn" id="win-max" title="Maximize" aria-label="Maximize">&#xE922;</button>
+          <button class="tb-btn tb-close" id="win-close" title="Close" aria-label="Close">&#xE8BB;</button>
+        </div>
+      </header>
+
+      <div id="body">
+        <!-- Activity bar -->
+        <div id="activitybar">
+          <button class="act-btn active" data-view="explorer" title="Explorer  (Ctrl+Shift+E)">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          </button>
+          <button class="act-btn" data-view="search" title="Search  (Ctrl+Shift+F)">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          </button>
+          <button class="act-btn" data-view="git" title="Source Control">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17 4a3 3 0 0 0-1 5.83V11a3 3 0 0 1-3 3H9.83A3 3 0 0 0 8 12.17V7.83a3 3 0 1 0-2 0v8.34a3 3 0 1 0 2 0V16h5a5 5 0 0 0 5-5V9.83A3 3 0 0 0 17 4z"/></svg>
+          </button>
+          <div class="act-spacer"></div>
+          <button class="act-btn" data-view="settings" title="Settings  (Ctrl+,)">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19.4 13a7.8 7.8 0 0 0 .06-2l2-1.6-2-3.46-2.4 1a7.6 7.6 0 0 0-1.7-1L14.9 1h-4l-.4 2.4a7.6 7.6 0 0 0-1.7 1l-2.4-1-2 3.46 2 1.6a7.8 7.8 0 0 0 0 2l-2 1.6 2 3.46 2.4-1c.5.4 1.1.7 1.7 1l.4 2.4h4l.4-2.4c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.46-2-1.6zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+          </button>
+        </div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar">
+          <section class="side-view" data-view="explorer">
+            <div class="side-head">
+              <span class="side-title" id="explorer-root-name">EXPLORER</span>
+              <div class="side-actions">
+                <button data-cmd="explorer.newFile" title="New File">&#xE7C3;</button>
+                <button data-cmd="explorer.newFolder" title="New Folder">&#xE8B7;</button>
+                <button data-cmd="explorer.refresh" title="Refresh">&#xE72C;</button>
+                <button data-cmd="explorer.collapseAll" title="Collapse All">&#xF165;</button>
+              </div>
+            </div>
+            <div class="side-body" id="explorer-tree">
+              <div class="empty-hint">
+                <p>You have not opened a folder.</p>
+                <button class="btn-primary" data-cmd="workspace.openFolder">Open Folder</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-view" data-view="search" hidden>
+            <div class="side-head"><span class="side-title">SEARCH</span></div>
+            <div class="side-body" id="search-panel"></div>
+          </section>
+
+          <section class="side-view" data-view="git" hidden>
+            <div class="side-head"><span class="side-title">SOURCE CONTROL</span></div>
+            <div class="side-body">
+              <div class="empty-hint"><p>Git integration is not part of this build yet.</p></div>
+            </div>
+          </section>
+
+          <section class="side-view" data-view="settings" hidden>
+            <div class="side-head"><span class="side-title">SETTINGS</span></div>
+            <div class="side-body" id="settings-panel"></div>
+          </section>
+        </aside>
+
+        <div id="sidebar-resizer" class="resizer-v"></div>
+
+        <!-- Main -->
+        <main id="main">
+          <div id="editor-region">
+            <div id="tabbar" class="empty"></div>
+            <div id="breadcrumbs" hidden></div>
+            <div id="editor-host">
+              <div id="welcome">
+                <div class="welcome-inner">
+                  <h1><span class="wm-x">X</span>code</h1>
+                  <p class="tag">A fast, lightweight code editor.</p>
+                  <div class="welcome-cols">
+                    <div>
+                      <h3>Start</h3>
+                      <button data-cmd="workspace.openFolder">Open Folder&hellip;</button>
+                      <button data-cmd="file.open">Open File&hellip;</button>
+                      <button data-cmd="file.new">New File</button>
+                    </div>
+                    <div>
+                      <h3>Recent</h3>
+                      <div id="welcome-recent"><span class="muted">No recent folders</span></div>
+                    </div>
+                    <div>
+                      <h3>Tips</h3>
+                      <p><kbd>Ctrl</kbd>+<kbd>P</kbd> Go to file</p>
+                      <p><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> Commands</p>
+                      <p><kbd>Ctrl</kbd>+<kbd>`</kbd> Terminal</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="monaco" hidden></div>
+            </div>
+          </div>
+
+          <div id="panel-resizer" class="resizer-h" hidden></div>
+
+          <div id="panel" hidden>
+            <div id="panel-tabs">
+              <div class="panel-tabgroup">
+                <button class="panel-tab active" data-panel="terminal">TERMINAL</button>
+                <button class="panel-tab" data-panel="problems">PROBLEMS</button>
+              </div>
+              <div class="panel-tools">
+                <select id="term-select" title="Active terminal"></select>
+                <button id="term-new" title="New Terminal">&#xE710;</button>
+                <button id="term-kill" title="Kill Terminal">&#xE74D;</button>
+                <button id="panel-close" title="Close Panel">&#xE8BB;</button>
+              </div>
+            </div>
+            <div id="panel-body">
+              <div class="panel-view" data-panel="terminal" id="terminal-host"></div>
+              <div class="panel-view" data-panel="problems" hidden>
+                <div class="empty-hint"><p>No problems detected.</p></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Status bar -->
+      <footer id="statusbar">
+        <div class="sb-left">
+          <span class="sb-item" id="sb-branch" hidden>&#xE0A0; main</span>
+          <span class="sb-item" id="sb-problems" title="Problems">&#xEA6C; 0 &nbsp;&#xE7BA; 0</span>
+        </div>
+        <div class="sb-right">
+          <span class="sb-item" id="sb-position" data-cmd="editor.gotoLine">Ln 1, Col 1</span>
+          <span class="sb-item" id="sb-indent" data-cmd="editor.toggleIndent">Spaces: 2</span>
+          <span class="sb-item" id="sb-encoding">UTF-8</span>
+          <span class="sb-item" id="sb-eol">LF</span>
+          <span class="sb-item" id="sb-lang" data-cmd="editor.selectLanguage">Plain Text</span>
+          <span class="sb-item" id="sb-mem" title="Memory used by Xcode" hidden></span>
+          <span class="sb-item" id="sb-theme" data-cmd="theme.pick" title="Color Theme">&#xE771;</span>
+        </div>
+      </footer>
+
+      <!-- Quick pick / command palette -->
+      <div id="palette-overlay" hidden>
+        <div id="palette">
+          <input id="palette-input" type="text" spellcheck="false" autocomplete="off" />
+          <div id="palette-list"></div>
+        </div>
+      </div>
+
+      <!-- Context menu -->
+      <div id="context-menu" hidden></div>
+
+      <!-- Toasts -->
+      <div id="toasts"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
