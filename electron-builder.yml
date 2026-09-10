@@ -1,30 +1,56 @@
 appId: com.masudranadev.xcode
 productName: Xcode
+# @lydell/node-pty ships prebuilt N-API binaries, so packaging never needs a
+# C/C++ toolchain and there is nothing to rebuild.
+npmRebuild: false
 directories:
   output: release
   buildResources: build
+# monaco-editor / xterm are bundled into out/renderer by electron-vite, so their
+# node_modules copies are dead weight inside the app archive.
 files:
   - out/**/*
   - package.json
+  - build/icon.png
+  - "!node_modules/monaco-editor/**/*"
+  - "!node_modules/@xterm/**/*"
+  - "!node_modules/typescript/**/*"
+# Native PTY binaries can't be dlopen'd from inside the asar.
 asarUnpack:
-  - "**/node_modules/node-pty/**"
+  - "**/node_modules/@lydell/**"
+publish:
+  provider: github
+  owner: imadnanhassan
+  repo: x-code
 win:
   target:
+    - target: zip
+      arch: [x64]
     - target: nsis
-      arch:
-        - x64
-  artifactName: ${productName}-${version}-setup.${ext}
+      arch: [x64]
+  # Unsigned personal build — skip electron-builder's win code-sign toolchain
+  # (its archive needs Windows symlink privilege to unpack). The running app's
+  # taskbar icon is still set via BrowserWindow { icon } in the main process.
+  signAndEditExecutable: false
+  artifactName: ${productName}-${version}-${arch}.${ext}
 nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
+  artifactName: ${productName}-Setup-${version}.${ext}
 mac:
-  target: dmg
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
   category: public.app-category.developer-tools
+  artifactName: ${productName}-${version}-${arch}.${ext}
 linux:
   target:
     - AppImage
     - deb
   category: Development
+  artifactName: ${productName}-${version}-${arch}.${ext}

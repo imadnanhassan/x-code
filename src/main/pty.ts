@@ -1,59 +1,87 @@
 import { BrowserWindow, ipcMain, app } from 'electron'
 import { platform, homedir } from 'os'
+import { existsSync } from 'fs'
+import type { IPty, IPtyForkOptions } from '@lydell/node-pty'
 
 type GetWin = () => BrowserWindow | null
 
-// node-pty is a native module. If it failed to build (missing toolchain) we
-// degrade gracefully: the renderer is told the terminal is unavailable.
+// @lydell/node-pty ships prebuilt N-API binaries for every OS/arch, so this
+// loads without any C/C++ toolchain. Still guarded — if a platform binary is
+// somehow missing we degrade gracefully instead of crashing.
 declare const require: (id: string) => unknown
 
-let pty: typeof import('node-pty') | null = null
+let pty: typeof import('@lydell/node-pty') | null = null
 let loadError = ''
 try {
-  pty = require('node-pty') as typeof import('node-pty')
+  pty = require('@lydell/node-pty') as typeof import('@lydell/node-pty')
 } catch (err) {
   loadError = err instanceof Error ? err.message : String(err)
 }
 
 interface Term {
-  proc: import('node-pty').IPty
+  proc: IPty
   title: string
 }
 
 const terms = new Map<number, Term>()
 let nextId = 1
 
+function firstExisting(paths: string[]): string | null {
+  for (const p of paths) if (p && existsSync(p)) return p
+  return null
+}
+
 function defaultShell(): { file: string; args: string[] } {
   if (platform() === 'win32') {
-    return { file: process.env.COMSPEC || 'powershell.exe', args: [] }
+    const pwsh = firstExisting([
+      `${process.env.ProgramFiles}\\PowerShell\\7\\pwsh.exe`,
+      `${process.env['ProgramW6432']}\\PowerShell\\7\\pwsh.exe`
+    ])
+    if (pwsh) return { file: pwsh, args: ['-NoLogo'] }
+    const winPS = `${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`
+    if (existsSync(winPS)) return { file: winPS, args: ['-NoLogo'] }
+    return { file: process.env.COMSPEC || 'cmd.exe', args: [] }
   }
+  if (platform() === 'darwin') return { file: process.env.SHELL || '/bin/zsh', args: ['-l'] }
   return { file: process.env.SHELL || '/bin/bash', args: ['-l'] }
 }
 
 export function registerPty(getWin: GetWin): void {
   ipcMain.handle('pty:available', () => ({ ok: !!pty, error: loadError }))
 
-  ipcMain.handle('pty:spawn', (_e, opts: { cwd?: string; cols?: number; rows?: number }) => {
-    if (!pty) return { id: -1, error: loadError || 'node-pty not available' }
-    const { file, args } = defaultShell()
-    const cwd = opts.cwd && opts.cwd.length ? opts.cwd : (app.getPath('home') || homedir())
-    const proc = pty.spawn(file, args, {
-      name: 'xterm-color',
-      cols: opts.cols ?? 80,
-      rows: opts.rows ?? 24,
-      cwd,
-      env: { ...process.env, TERM: 'xterm-256color' } as Record<string, string>
-    })
-    const id = nextId++
-    terms.set(id, { proc, title: file.split(/[\\/]/).pop() || 'shell' })
+  ipcMain.handle(
+    'pty:spawn',
+    (_e, opts: { cwd?: string; cols?: number; rows?: number; shell?: string }) => {
+      if (!pty) return { id: -1, error: loadError || 'node-pty not available' }
+      const dflt = defaultShell()
+      const file = opts.shell || dflt.file
+      const args = opts.shell ? [] : dflt.args
+      const cwd =
+        opts.cwd && existsSync(opts.cwd) ? opts.cwd : app.getPath('home') || homedir()
+      const forkOpts: IPtyForkOptions = {
+        name: 'xterm-256color',
+        cols: opts.cols ?? 80,
+        rows: opts.rows ?? 24,
+        cwd,
+        env: { ...process.env, TERM: 'xterm-256color', COLORTERM: 'truecolor' } as Record<string, string>
+      }
+      let proc: IPty
+      try {
+        proc = pty.spawn(file, args, forkOpts)
+      } catch (err) {
+        return { id: -1, error: err instanceof Error ? err.message : String(err) }
+      }
+      const id = nextId++
+      terms.set(id, { proc, title: file.split(/[\\/]/).pop()?.replace(/\.exe$/i, '') || 'shell' })
 
-    proc.onData((data) => getWin()?.webContents.send('pty:data', { id, data }))
-    proc.onExit(({ exitCode }) => {
-      terms.delete(id)
-      getWin()?.webContents.send('pty:exit', { id, exitCode })
-    })
-    return { id }
-  })
+      proc.onData((data) => getWin()?.webContents.send('pty:data', { id, data }))
+      proc.onExit(({ exitCode }) => {
+        terms.delete(id)
+        getWin()?.webContents.send('pty:exit', { id, exitCode })
+      })
+      return { id, shell: terms.get(id)!.title }
+    }
+  )
 
   ipcMain.on('pty:input', (_e, id: number, data: string) => {
     terms.get(id)?.proc.write(data)

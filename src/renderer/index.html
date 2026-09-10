@@ -14,7 +14,8 @@
       <!-- Title bar -->
       <header id="titlebar">
         <div class="tb-left">
-          <div class="tb-logo" title="Xcode">X</div>
+          <div class="tb-logo" title="Xcode by DataDropX">&lt;/&gt;</div>
+          <span class="tb-brand">Xcode<i>by DataDropX</i></span>
           <nav class="tb-menu" id="tb-menu"></nav>
         </div>
         <div class="tb-center" id="tb-title">Xcode</div>
@@ -114,6 +115,13 @@
                 </div>
               </div>
               <div id="monaco" hidden></div>
+              <div id="md-preview" hidden>
+                <div class="md-preview-head">
+                  <span>PREVIEW</span>
+                  <button id="md-preview-close" title="Close Preview">&#xE8BB;</button>
+                </div>
+                <div class="md-preview-body markdown-body"></div>
+              </div>
             </div>
           </div>
 

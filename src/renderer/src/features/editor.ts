@@ -55,8 +55,13 @@ export function editorOptions(): monaco.editor.IStandaloneEditorConstructionOpti
     scrollbar: { verticalScrollbarSize: 12, horizontalScrollbarSize: 12, useShadows: false },
     suggestSelection: 'first',
     linkedEditing: true,
-    formatOnPaste: true,
+    autoClosingBrackets: 'languageDefined',
+    autoClosingQuotes: 'languageDefined',
+    autoSurround: 'languageDefined',
+    formatOnPaste: store.settings.formatOnPaste,
     mouseWheelZoom: true,
+    colorDecorators: true,
+    colorDecoratorsActivatedOn: 'clickAndHover',
     unicodeHighlight: { ambiguousCharacters: false },
     // memory-lean defaults
     codeLens: false,
@@ -65,6 +70,19 @@ export function editorOptions(): monaco.editor.IStandaloneEditorConstructionOpti
     occurrencesHighlight: 'singleFile',
     foldingMaximumRegions: 2000,
     stopRenderingLineAfter: 12000
+  }
+}
+
+function applySaveCleanups(model: monaco.editor.ITextModel): void {
+  const s = store.settings
+  if (!s.trimTrailingWhitespace && !s.insertFinalNewline && !s.trimFinalNewlines) return
+  let text = model.getValue()
+  const before = text
+  if (s.trimTrailingWhitespace) text = text.replace(/[ \t]+(\r?\n)/g, '$1').replace(/[ \t]+$/, '')
+  if (s.trimFinalNewlines) text = text.replace(/(\r?\n)+$/, s.insertFinalNewline ? '$1' : '')
+  if (s.insertFinalNewline && text.length && !/\n$/.test(text)) text += model.getEOL()
+  if (text !== before) {
+    model.applyEdits([{ range: model.getFullModelRange(), text }])
   }
 }
 
@@ -278,6 +296,7 @@ async function saveTab(t: Tab, as = false): Promise<void> {
       /* no formatter for this language */
     }
   }
+  applySaveCleanups(t.model)
   try {
     await window.xcode.fs.write(path, t.model.getValue())
   } catch {
@@ -306,6 +325,7 @@ export async function saveAll(silent = false): Promise<void> {
   for (const t of tabs) {
     if (t.dirty && t.path) {
       try {
+        applySaveCleanups(t.model)
         await window.xcode.fs.write(t.path, t.model.getValue())
         t.dirty = false
         bus.emit(Ev.fileSaved, t.path)

@@ -17,6 +17,10 @@ import { registerCommands, openCommandPalette, openPicker, quickPick } from './f
 import { fileIcon } from './features/icons'
 import { toast } from './features/toast'
 import { installKeybindings } from './features/keybindings'
+import { enableEmmet } from './features/monaco'
+import { initMarkdownPreview, toggleMarkdownPreview } from './features/markdownPreview'
+import { importVSCodeSettings } from './features/vscodeImport'
+import { initUpdater, checkForUpdatesNow } from './features/updater'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -28,7 +32,10 @@ async function boot(): Promise<void> {
   initSearch()
   initSettingsPanel()
   initStatusbar()
+  initMarkdownPreview()
+  initUpdater()
   await initTerminal()
+  if (store.settings.emmet) void enableEmmet()
 
   registerAllCommands()
   installKeybindings()
@@ -50,6 +57,9 @@ function registerAllCommands(): void {
     { id: 'file.saveAll', title: 'Save All', category: 'File', run: () => saveAll() },
     { id: 'file.close', title: 'Close Editor', category: 'File', run: () => { const t = current(); if (t) closeTab(t.id) } },
     { id: 'file.revealInExplorer', title: 'Reveal Active File in Explorer', category: 'File', run: () => { const t = current(); if (t?.path) bus.emit('explorer:reveal', t.path) } },
+    { id: 'file.revealInOS', title: 'Reveal in File Explorer', category: 'File', run: () => { const t = current(); if (t?.path) window.xcode.os.revealInFolder(t.path); else if (store.rootPath) window.xcode.os.revealInFolder(store.rootPath) } },
+    { id: 'file.openInDefaultApp', title: 'Open in Default App', category: 'File', run: async () => { const t = current(); if (t?.path) { const err = await window.xcode.os.openPath(t.path); if (err) toast(err, 'error') } } },
+    { id: 'preferences.importVSCode', title: 'Import VS Code Settings', category: 'Preferences', run: importVSCodeSettings },
 
     { id: 'workbench.commandPalette', title: 'Show All Commands', category: 'View', run: openCommandPalette },
     { id: 'workbench.quickOpen', title: 'Go to File…', category: 'View', run: openQuickOpen },
@@ -63,6 +73,8 @@ function registerAllCommands(): void {
 
     { id: 'terminal.toggle', title: 'Toggle Terminal', category: 'Terminal', run: () => togglePanel() },
     { id: 'terminal.new', title: 'New Terminal', category: 'Terminal', run: () => bus.emit('terminal:new') },
+    { id: 'terminal.runCommand', title: 'Run Command…', category: 'Terminal', run: runCommandPrompt },
+    { id: 'terminal.here', title: 'Open Terminal at Selected Folder', category: 'Terminal', run: () => bus.emit('terminal:new-here') },
 
     { id: 'explorer.newFile', title: 'New File', category: 'Explorer', run: () => createFileFlow() },
     { id: 'explorer.newFolder', title: 'New Folder', category: 'Explorer', run: () => createFolderFlow() },
@@ -76,10 +88,25 @@ function registerAllCommands(): void {
     { id: 'editor.toggleWordWrap', title: 'Toggle Word Wrap', category: 'View', run: () => store.updateSettings({ wordWrap: store.settings.wordWrap === 'on' ? 'off' : 'on' }) },
     { id: 'editor.toggleMinimap', title: 'Toggle Minimap', category: 'View', run: () => store.updateSettings({ minimap: !store.settings.minimap }) },
     { id: 'editor.toggleIndent', title: 'Toggle Tabs / Spaces', category: 'Editor', run: () => store.updateSettings({ insertSpaces: !store.settings.insertSpaces }) },
+    { id: 'markdown.togglePreview', title: 'Toggle Markdown Preview', category: 'View', keybinding: 'Ctrl+Shift+V', run: toggleMarkdownPreview },
 
     { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', run: showShortcuts },
+    { id: 'help.checkUpdates', title: 'Check for Updates', category: 'Help', run: checkForUpdatesNow },
     { id: 'help.about', title: 'About Xcode', category: 'Help', run: showAbout }
   ])
+}
+
+function runCommandPrompt(): void {
+  openPicker({
+    placeholder: 'Type a shell command to run in the terminal',
+    live: true,
+    items: (q) => {
+      const cmd = q.trim()
+      return [
+        { label: cmd ? `Run: ${cmd}` : 'Enter a command…', run: () => { if (cmd) runInTerminal(cmd) } }
+      ]
+    }
+  })
 }
 
 async function openFileDialog(): Promise<void> {
@@ -208,9 +235,9 @@ async function showAbout(): Promise<void> {
   modal(
     'About Xcode',
     `<div class="about">
-      <div class="about-logo">X</div>
+      <div class="about-logo">&lt;/&gt;</div>
       <h2>Xcode</h2>
-      <p class="muted">A fast, lightweight personal code editor</p>
+      <p class="muted">by DataDropX · a focused code editor</p>
       <table>
         <tr><td>Version</td><td>${info.version}</td></tr>
         <tr><td>Electron</td><td>${info.electron}</td></tr>
@@ -340,7 +367,6 @@ function wireBusBridges(): void {
     ed.getAction(id)?.run()
   })
   bus.on('terminal:run', (cmd: string) => runInTerminal(cmd))
-  bus.on('terminal:new', () => document.getElementById('term-new')?.dispatchEvent(new Event('click')))
   bus.on(Ev.settingsChanged, () => applyZoomVar())
   bus.on(Ev.themeChanged, () => {
     const sb = document.getElementById('sb-theme')

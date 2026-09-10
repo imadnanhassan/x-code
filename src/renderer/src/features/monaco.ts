@@ -82,4 +82,18 @@ export function configureLanguages(): void {
   })
 }
 
+let emmetReady = false
+export async function enableEmmet(): Promise<void> {
+  if (emmetReady) return
+  emmetReady = true
+  try {
+    const { emmetHTML, emmetCSS, emmetJSX } = await import('emmet-monaco-es')
+    emmetHTML(monaco, ['html', 'xml', 'php', 'handlebars', 'markdown'])
+    emmetCSS(monaco, ['css', 'scss', 'less'])
+    emmetJSX(monaco, ['javascript', 'typescript'])
+  } catch (err) {
+    console.warn('[xcode] emmet failed to load', err)
+  }
+}
+
 export { monaco }

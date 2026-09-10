@@ -63,9 +63,35 @@ const api = {
     memory: (): Promise<{ totalMB: number; processes: number }> => ipcRenderer.invoke('app:memory')
   },
 
+  os: {
+    revealInFolder: (target: string) => ipcRenderer.send('os:reveal', target),
+    openPath: (target: string): Promise<string> => ipcRenderer.invoke('os:open-path', target),
+    openExternal: (url: string) => ipcRenderer.send('os:open-external', url)
+  },
+
+  vscode: {
+    findSettings: (): Promise<{ path: string; content: string } | null> =>
+      ipcRenderer.invoke('vscode:find-settings'),
+    pickSettingsFile: (): Promise<{ path: string; content: string } | null> =>
+      ipcRenderer.invoke('vscode:pick-settings')
+  },
+
+  update: {
+    check: (): Promise<{ version?: string | null; error?: string }> =>
+      ipcRenderer.invoke('update:check'),
+    install: () => ipcRenderer.send('update:install'),
+    onAvailable: (cb: Listener<string>) => on('update:available', cb),
+    onDownloaded: (cb: Listener<string>) => on('update:downloaded', cb)
+  },
+
   pty: {
     available: (): Promise<{ ok: boolean; error: string }> => ipcRenderer.invoke('pty:available'),
-    spawn: (opts: { cwd?: string; cols?: number; rows?: number }): Promise<{ id: number; error?: string }> =>
+    spawn: (opts: {
+      cwd?: string
+      cols?: number
+      rows?: number
+      shell?: string
+    }): Promise<{ id: number; error?: string; shell?: string }> =>
       ipcRenderer.invoke('pty:spawn', opts),
     input: (id: number, data: string) => ipcRenderer.send('pty:input', id, data),
     resize: (id: number, cols: number, rows: number) => ipcRenderer.send('pty:resize', id, cols, rows),

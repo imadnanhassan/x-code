@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xcode by DataDropX — a focused code editor</title>
+<meta name="description" content="Xcode is a focused code editor by DataDropX: a clean interface, a built-in terminal, Emmet, 9 themes, and a workspace that feels like yours — running in a fraction of the memory." />
+<meta property="og:title" content="Xcode by DataDropX" />
+<meta property="og:description" content="Your ideas. Beautifully coded. A focused code editor with a built-in terminal and a workspace that feels like yours." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f6f7;
+    --bg-mock: #fbfbfc;
+    --ink: #0b0b0c;
+    --ink-2: #3f3f46;
+    --muted: #71717a;
+    --faint: #a1a1aa;
+    --line: #e7e7ea;
+    --line-2: #efeff1;
+    --orange: #f0491e;
+    --orange-hi: #ff5a2c;
+    --dark: #0c0c0d;
+    --radius: 16px;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --display: "Inter Tight", var(--sans);
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 22px; border-radius: 12px; font-weight: 600; font-size: 15px;
+    font-family: var(--sans); cursor: pointer; border: 1px solid transparent;
+    transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    white-space: nowrap;
+  }
+  .btn svg { width: 17px; height: 17px; }
+  .btn-orange { background: var(--orange); color: #fff; box-shadow: 0 8px 22px -8px rgba(240,73,30,.6); }
+  .btn-orange:hover { background: var(--orange-hi); transform: translateY(-1px); }
+  .btn-dark { background: var(--dark); color: #fff; }
+  .btn-dark:hover { transform: translateY(-1px); }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--bg-soft); }
+  .btn-sm { padding: 9px 15px; font-size: 13.5px; }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, #fff 82%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line-2);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo {
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+    background: linear-gradient(140deg, #ff6a3d, #e8401a); color: #fff;
+    font-family: var(--mono); font-weight: 700; font-size: 13px;
+    box-shadow: 0 6px 16px -6px rgba(232,64,26,.55);
+  }
+  .brand b { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; }
+  .brand span { color: var(--muted); font-size: 14px; margin-left: 2px; }
+  .nav-links { display: flex; align-items: center; gap: 30px; font-size: 14.5px; color: var(--ink-2); }
+  .nav-links a:not(.btn):hover { color: var(--orange); }
+
+  /* ---------- hero ---------- */
+  header.hero { text-align: center; padding: 74px 0 0; position: relative; }
+  header.hero::before {
+    content: ""; position: absolute; left: 50%; top: -60px; width: 900px; height: 520px;
+    transform: translateX(-50%);
+    background: radial-gradient(50% 55% at 50% 0%, rgba(240,73,30,.10), transparent 72%);
+    pointer-events: none;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
+    background: var(--bg-soft); border: 1px solid var(--line); padding: 7px 15px; border-radius: 999px;
+  }
+  .pill .d { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+  header.hero h1 { font-size: clamp(44px, 7vw, 82px); font-weight: 900; margin: 26px 0 22px; }
+  header.hero h1 .o { color: var(--orange); }
+  .lede { font-size: clamp(16px, 2.1vw, 20px); color: var(--muted); max-width: 40ch; margin: 0 auto; }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; margin: 34px 0 12px; flex-wrap: wrap; }
+  .by { font-size: 13px; color: var(--faint); }
+
+  /* ---------- editor mock ---------- */
+  .shot-wrap { padding: 46px 0 10px; }
+  .shot {
+    max-width: 1160px; margin: 0 auto; border: 1px solid var(--line);
+    border-radius: 18px; overflow: hidden; background: var(--bg-mock);
+    box-shadow: 0 50px 120px -40px rgba(12,12,13,.35), 0 12px 30px -12px rgba(12,12,13,.12);
+    font-size: 12px;
+  }
+  .m-top {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    background: #fff; border-bottom: 1px solid var(--line-2);
+  }
+  .m-top .logo { width: 24px; height: 24px; font-size: 11px; border-radius: 6px; }
+  .m-top .brand b { font-size: 15px; }
+  .m-search {
+    flex: 1; max-width: 460px; margin: 0 auto; display: flex; align-items: center; gap: 8px;
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 9px;
+    padding: 7px 12px; color: var(--faint); font-size: 12px;
+  }
+  .m-search .kbd { margin-left: auto; font-family: var(--mono); font-size: 10px; background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+  .m-top-right { display: flex; align-items: center; gap: 10px; color: var(--faint); }
+  .m-run { display: inline-flex; align-items: center; gap: 6px; background: var(--orange); color: #fff; font-weight: 600; padding: 5px 12px; border-radius: 7px; font-size: 11.5px; }
+  .m-win { display: flex; gap: 8px; color: var(--faint); font-size: 13px; }
+
+  .m-body { display: grid; grid-template-columns: 44px 210px 1fr 300px; min-height: 430px; }
+  .m-act { border-right: 1px solid var(--line-2); display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 14px 0; color: var(--faint); font-size: 15px; }
+  .m-act .on { color: var(--orange); }
+  .m-side { border-right: 1px solid var(--line-2); padding: 12px 10px; background: #fff; }
+  .m-side .h { font-size: 10.5px; letter-spacing: .1em; color: var(--faint); font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .m-side .row { display: flex; align-items: center; gap: 7px; padding: 3px 6px; border-radius: 5px; color: var(--ink-2); white-space: nowrap; font-size: 11.5px; }
+  .m-side .row.sel { background: #fdece7; color: var(--ink); }
+  .m-side .row .ic { width: 13px; text-align: center; }
+  .m-side .row .m { margin-left: auto; color: var(--orange); font-weight: 700; }
+  .ind { padding-left: 14px; } .ind2 { padding-left: 26px; }
+
+  .m-editor { display: flex; flex-direction: column; min-width: 0; background: var(--bg-mock); }
+  .m-tabs { display: flex; border-bottom: 1px solid var(--line-2); background: #fff; }
+  .m-tab { display: flex; align-items: center; gap: 7px; padding: 8px 14px; font-size: 11.5px; border-right: 1px solid var(--line-2); color: var(--muted); }
+  .m-tab.act { background: var(--bg-mock); color: var(--ink); box-shadow: inset 0 2px 0 var(--orange); }
+  .m-bc { padding: 5px 16px; font-size: 10.5px; color: var(--faint); border-bottom: 1px solid var(--line-2); }
+  .m-code { flex: 1; overflow: hidden; padding: 12px 0; font-family: var(--mono); line-height: 1.75; }
+  .m-code .cl { display: flex; padding: 0 16px; }
+  .m-code .cl.hl { background: #fdf0ec; box-shadow: inset 2px 0 0 var(--orange); }
+  .m-code .n { width: 26px; color: var(--faint); flex-shrink: 0; user-select: none; }
+  .kw { color: #a4262c; } .st { color: #157a3f; } .fn { color: #1f6feb; } .ty { color: #b3560f; } .cm { color: #9aa0a6; } .at { color: #7a4dbd; } .pn { color: #57606a; }
+
+  .m-ai { border-left: 1px solid var(--line-2); background: #fff; display: flex; flex-direction: column; }
+  .m-ai .ai-h { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line-2); }
+  .m-ai .spark { color: var(--orange); font-size: 15px; }
+  .m-ai .ai-h b { font-family: var(--display); font-size: 14px; }
+  .m-ai .ai-h .st-dot { font-size: 10px; color: #16a34a; }
+  .m-ai .ai-h .auto { margin-left: auto; font-size: 10.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+  .m-ai .ai-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; font-size: 11.5px; }
+  .m-ai .msg .who { color: var(--faint); font-size: 10px; margin-bottom: 3px; }
+  .m-ai .msg p { color: var(--ink-2); }
+  .m-ai .files { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .m-ai .files .ft { padding: 8px 11px; font-weight: 600; font-size: 11px; border-bottom: 1px solid var(--line-2); }
+  .m-ai .files .fr { display: flex; padding: 6px 11px; font-size: 10.5px; color: var(--muted); font-family: var(--mono); }
+  .m-ai .files .fr .plus { margin-left: auto; color: #16a34a; }
+  .m-ai .apply { display: flex; gap: 7px; padding: 9px 11px; }
+  .m-ai .apply .a1 { flex: 1; text-align: center; border: 1px solid var(--line); border-radius: 7px; padding: 5px; font-size: 10.5px; color: var(--ink-2); }
+  .m-ai .apply .a2 { flex: 1; text-align: center; background: var(--orange); color: #fff; border-radius: 7px; padding: 5px; font-size: 10.5px; font-weight: 600; }
+  .m-ai .chk { display: flex; gap: 8px; font-size: 11px; color: var(--ink-2); }
+  .m-ai .chk .c { color: #16a34a; }
+  .m-ai .ask { margin-top: auto; border-top: 1px solid var(--line-2); padding: 11px 14px; color: var(--faint); font-size: 11px; display: flex; align-items: center; gap: 8px; }
+  .m-ai .ask .send { margin-left: auto; width: 22px; height: 22px; border-radius: 6px; background: var(--orange); color: #fff; display: grid; place-items: center; }
+
+  .m-panel { border-top: 1px solid var(--line-2); background: #fff; }
+  .m-panel .pt { display: flex; gap: 16px; padding: 7px 16px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line-2); }
+  .m-panel .pt .act { color: var(--ink); box-shadow: inset 0 -2px 0 var(--orange); padding-bottom: 5px; }
+  .m-term { padding: 10px 16px; font-family: var(--mono); font-size: 11px; color: var(--ink-2); line-height: 1.8; }
+  .m-term .ok { color: #16a34a; } .m-term .mut { color: var(--faint); } .m-term .lnk { color: #1f6feb; }
+  .m-status { display: flex; align-items: center; gap: 14px; padding: 5px 16px; font-size: 10.5px; color: var(--muted); border-top: 1px solid var(--line-2); background: #fff; }
+  .m-status .sp { margin-left: auto; }
+
+  /* ---------- features ---------- */
+  section { padding: 96px 0; }
+  .feat-head { margin-bottom: 46px; }
+  .feat-head h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 900; }
+  .feat-head p { color: var(--muted); margin-top: 12px; font-size: 16px; max-width: 44ch; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
+    background: #fff; display: flex; flex-direction: column;
+  }
+  .card .cico { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: #fdece7; color: var(--orange); font-family: var(--mono); font-weight: 700; font-size: 15px; margin-bottom: 16px; }
+  .card h3 { font-size: 18px; font-weight: 700; }
+  .card p { color: var(--muted); font-size: 14px; margin: 8px 0 18px; }
+  .card .inset {
+    margin-top: auto; border: 1px solid var(--line-2); border-radius: 11px; overflow: hidden;
+    background: var(--bg-mock); font-family: var(--mono); font-size: 10.5px;
+  }
+  .inset .ii { padding: 10px 12px; }
+  .inset .tree-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; color: var(--ink-2); }
+  .inset .tree-row.s { color: var(--orange); font-weight: 600; }
+  .inset .chatline { color: var(--ink-2); }
+  .inset .chatline .who { color: var(--faint); }
+  .inset .ibar { display: flex; gap: 10px; padding: 6px 10px; border-bottom: 1px solid var(--line-2); font-size: 9.5px; color: var(--muted); }
+  .inset .ibar .a { color: var(--ink); }
+  .inset .tline .ok { color: #16a34a; } .inset .tline .cur { color: var(--orange); }
+
+  /* ---------- AI section ---------- */
+  #ai .cards { grid-template-columns: 1.15fr .85fr; align-items: center; }
+  .ai-copy .tag { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--orange); background: #fdece7; padding: 5px 11px; border-radius: 999px; margin-bottom: 14px; }
+  .ai-copy h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 900; }
+  .ai-copy p { color: var(--muted); margin-top: 12px; font-size: 15.5px; }
+  .ai-copy ul { list-style: none; margin: 20px 0 0; display: grid; gap: 10px; }
+  .ai-copy li { display: flex; gap: 10px; font-size: 14.5px; color: var(--ink-2); }
+  .ai-copy li .c { color: var(--orange); }
+  .ai-visual { border: 1px solid var(--line); border-radius: var(--radius); background: #fff; padding: 16px; }
+  .ai-visual .row { display: flex; align-items: center; gap: 8px; padding: 8px 4px; font-size: 12.5px; color: var(--ink-2); border-bottom: 1px solid var(--line-2); }
+  .ai-visual .row:last-child { border: none; }
+  .ai-visual .row .spark { color: var(--orange); }
+
+  /* ---------- FAQ ---------- */
+  #faq { background: var(--bg-soft); border-block: 1px solid var(--line); }
+  .faq-list { max-width: 780px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-item summary {
+    cursor: pointer; list-style: none; padding: 22px 4px; font-weight: 600; font-size: 16.5px;
+    display: flex; justify-content: space-between; align-items: center; font-family: var(--display);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary .pm { color: var(--orange); font-size: 20px; transition: transform .2s; }
+  .faq-item[open] summary .pm { transform: rotate(45deg); }
+  .faq-item .a { padding: 0 4px 22px; color: var(--muted); font-size: 15px; }
+
+  /* ---------- CTA band ---------- */
+  .cta-band { padding: 40px 0 100px; }
+  .cta-inner {
+    background: var(--dark); color: #fff; border-radius: 22px;
+    padding: 44px 48px; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
+  }
+  .cta-inner h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 900; }
+  .cta-inner p { color: #b8b8bd; margin-top: 8px; font-size: 15px; }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--line); padding: 40px 0; }
+  footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-size: 13.5px; color: var(--muted); }
+  footer .brand b { font-size: 16px; }
+  footer .fl { display: flex; gap: 24px; }
+  footer .fl a:hover { color: var(--orange); }
+
+  @media (max-width: 980px) {
+    .m-body { grid-template-columns: 40px 170px 1fr; }
+    .m-ai { display: none; }
+    .cards, #ai .cards { grid-template-columns: 1fr; }
+    .nav-links a:not(.btn) { display: none; }
+    section { padding: 68px 0; }
+    .cta-inner { flex-direction: column; text-align: center; padding: 36px 26px; }
+  }
+  @media (max-width: 620px) {
+    .m-side { display: none; }
+    .m-body { grid-template-columns: 40px 1fr; }
+    .wrap { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="logo">&lt;/&gt;</span>
+      <b>Xcode</b><span>by DataDropX</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#ai">AI Assistant</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-dark btn-sm" id="nav-dl" href="#download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="pill"><span class="d"></span> Built for your next big idea</span>
+    <h1>Your ideas.<br />Beautifully <span class="o">coded.</span></h1>
+    <p class="lede">A focused code editor with AI assistance, a built-in terminal, and a workspace that feels like yours.</p>
+    <div class="hero-cta">
+      <a class="btn btn-orange" id="hero-dl" href="#download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download Xcode
+      </a>
+      <a class="btn btn-ghost" href="#features">Explore features <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <p class="by">A code editor by DataDropX</p>
+  </div>
+</header>
+
+<div class="shot-wrap">
+  <div class="shot" aria-label="Xcode editor screenshot">
+    <div class="m-top">
+      <span class="logo">&lt;/&gt;</span>
+      <div class="brand"><b>Xcode</b><span>by DataDropX</span></div>
+      <div class="m-search">Search files, commands&hellip; <span class="kbd">&#8984; K</span></div>
+      <div class="m-top-right">
+        <span>&#9636;</span><span>&#9707;</span><span>&#9881;</span>
+        <span class="m-run">&#9654; Run</span>
+        <span class="m-win">&ndash; &#9633; &times;</span>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="m-act"><span class="on">&#9782;</span><span>&#9906;</span><span>&#8623;</span><span>&#9656;</span><span>&#9635;</span></div>
+      <div class="m-side">
+        <div class="h">PROJECT <span>&#8943;</span></div>
+        <div class="row"><span class="ic">&#9662;</span> datadropx-web</div>
+        <div class="row ind"><span class="ic">&#9656;</span> .next</div>
+        <div class="row ind"><span class="ic">&#9656;</span> node_modules</div>
+        <div class="row ind"><span class="ic">&#9656;</span> public</div>
+        <div class="row ind"><span class="ic">&#9662;</span> src</div>
+        <div class="row ind2"><span class="ic">&#9662;</span> app</div>
+        <div class="row ind2 sel" style="padding-left:38px"><span class="ic">&#9635;</span> page.tsx <span class="m">M</span></div>
+        <div class="row ind2" style="padding-left:38px"><span class="ic">&#9635;</span> layout.tsx</div>
+        <div class="row ind2" style="padding-left:38px"><span class="ic">#</span> globals.css</div>
+        <div class="row ind2"><span class="ic">&#9662;</span> components</div>
+        <div class="row" style="padding-left:38px"><span class="ic">&#9635;</span> DashboardCard.tsx</div>
+        <div class="row" style="padding-left:38px"><span class="ic">&#9635;</span> Navbar.tsx</div>
+        <div class="row ind2"><span class="ic">&#9656;</span> lib</div>
+        <div class="row ind"><span class="ic">&#9881;</span> .env.local</div>
+        <div class="row ind"><span class="ic">&#9670;</span> .gitignore</div>
+        <div class="row ind"><span class="ic">N</span> next.config.js</div>
+        <div class="row ind"><span class="ic">{}</span> package.json</div>
+        <div class="row ind"><span class="ic">&#9634;</span> README.md</div>
+        <div class="row ind"><span class="ic">TS</span> tsconfig.json</div>
+      </div>
+      <div class="m-editor">
+        <div class="m-tabs">
+          <div class="m-tab act">&#9635; page.tsx &times;</div>
+          <div class="m-tab">&#9635; dashboard.tsx</div>
+        </div>
+        <div class="m-bc">src &rsaquo; app &rsaquo; page.tsx &rsaquo; Dashboard</div>
+        <div class="m-code">
+          <div class="cl"><span class="n">1</span><span><span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;</span></div>
+          <div class="cl"><span class="n">2</span><span><span class="kw">import</span> { DashboardCard } <span class="kw">from</span> <span class="st">'@/components/DashboardCard'</span>;</span></div>
+          <div class="cl"><span class="n">3</span><span></span></div>
+          <div class="cl"><span class="n">4</span><span><span class="kw">export default function</span> <span class="fn">Dashboard</span>() {</span></div>
+          <div class="cl"><span class="n">5</span><span>&nbsp;&nbsp;<span class="kw">return</span> (</span></div>
+          <div class="cl"><span class="n">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"min-h-screen bg-gray-950"</span>&gt;</span></div>
+          <div class="cl"><span class="n">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"max-w-4xl mx-auto px-6 py-10"</span>&gt;</span></div>
+          <div class="cl"><span class="n">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"flex items-center justify-between mb-8"</span>&gt;</span></div>
+          <div class="cl"><span class="n">9</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">10</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">h1</span> <span class="at">className</span>=<span class="st">"text-2xl font-semibold text-white"</span>&gt;</span></div>
+          <div class="cl hl"><span class="n">11</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome back &#128075;</span></div>
+          <div class="cl"><span class="n">12</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">h1</span>&gt;</span></div>
+          <div class="cl"><span class="n">13</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">p</span> <span class="at">className</span>=<span class="st">"text-gray-400 mt-1"</span>&gt;</span></div>
+          <div class="cl"><span class="n">14</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Here's an overview of your project activity.</span></div>
+          <div class="cl"><span class="n">15</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">p</span>&gt;</span></div>
+          <div class="cl"><span class="n">16</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">17</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"grid grid-cols-1 md:grid-cols-3 gap-4"</span>&gt;</span></div>
+          <div class="cl"><span class="n">18</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="fn">DashboardCard</span> <span class="at">title</span>=<span class="st">"Total Users"</span> <span class="at">value</span>=<span class="st">"2,543"</span> /&gt;</span></div>
+          <div class="cl"><span class="n">19</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="fn">DashboardCard</span> <span class="at">title</span>=<span class="st">"Active Projects"</span> <span class="at">value</span>=<span class="st">"12"</span> /&gt;</span></div>
+          <div class="cl"><span class="n">20</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">21</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">22</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">23</span><span>&nbsp;&nbsp;);</span></div>
+          <div class="cl"><span class="n">24</span><span>}</span></div>
+        </div>
+        <div class="m-panel">
+          <div class="pt"><span class="act">Terminal</span><span>Output</span><span>Problems&nbsp;&nbsp;0</span></div>
+          <div class="m-term">
+            <div><span class="ok">&#10230;</span> datadropx-web&nbsp;&nbsp;<span class="mut">npm run dev</span></div>
+            <div class="mut">&gt; next dev</div>
+            <div><span class="ok">&#10003;</span> Ready in 878ms</div>
+            <div><span class="ok">&#10003;</span> Local:&nbsp;&nbsp;<span class="lnk">http://localhost:3000</span></div>
+            <div><span class="ok">&#10003;</span> Compiled successfully (312 modules)</div>
+          </div>
+        </div>
+        <div class="m-status">
+          <span>&#9095; main</span><span>&#10003; 0</span><span>&#9888; 0</span><span>&#9679; All good</span>
+          <span class="sp">Ln 11, Col 26</span><span>Spaces: 2</span><span>UTF-8</span><span>LF</span><span>TypeScript</span><span>{} Prettier</span>
+        </div>
+      </div>
+      <div class="m-ai">
+        <div class="ai-h"><span class="spark">&#10022;</span> <b>Xcode AI</b> <span class="st-dot">&#9679; Online</span> <span class="auto">Auto &#9662;</span></div>
+        <div class="ai-body">
+          <div class="msg"><div class="who">You &middot; 10:24 AM</div><p>Build a clean analytics dashboard</p></div>
+          <div class="msg"><div class="who">Xcode AI &middot; 10:24 AM</div><p>I've created a responsive layout with reusable components.</p></div>
+          <div class="files">
+            <div class="ft">&#9635; 3 files updated</div>
+            <div class="fr">Dashboard.tsx <span class="plus">+42</span></div>
+            <div class="fr">StatCard.tsx <span class="plus">+28</span></div>
+            <div class="fr">page.tsx <span class="plus">+12</span></div>
+            <div class="apply"><span class="a1">&#8599; Review changes</span><span class="a2">&#10003; Apply all</span></div>
+          </div>
+          <div class="chk"><span class="c">&#10003;</span> Responsive layout that works on all screens</div>
+          <div class="chk"><span class="c">&#10003;</span> Reusable, composable UI components</div>
+          <div class="chk"><span class="c">&#10003;</span> No TypeScript errors found</div>
+        </div>
+        <div class="ask">Ask Xcode AI&hellip; <span class="send">&#8593;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="feat-head">
+      <h2>Everything you need.<br />Nothing in your way.</h2>
+      <p>A clean editor with the tools you actually reach for — no extension hunting.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="cico">&lt;/&gt;</div>
+        <h3>Code with clarity</h3>
+        <p>A clean, intuitive interface designed for deep focus and real productivity — Monaco editing, 9 themes, command palette, cross-file search.</p>
+        <div class="inset"><div class="ii">
+          <div class="tree-row">&#9662; src</div>
+          <div class="tree-row" style="padding-left:12px">&#9662; app</div>
+          <div class="tree-row s" style="padding-left:24px">&#9635; page.tsx <span style="margin-left:auto">M</span></div>
+          <div class="tree-row" style="padding-left:24px">&#9635; layout.tsx</div>
+        </div></div>
+      </div>
+      <div class="card">
+        <div class="cico">&#10022;</div>
+        <h3>Build with AI <span style="font-size:11px;font-weight:600;color:var(--orange);background:#fdece7;padding:2px 8px;border-radius:999px;vertical-align:middle">Coming soon</span></h3>
+        <p>Intelligent assistance to generate code and refactor with confidence, right beside your editor.</p>
+        <div class="inset"><div class="ii">
+          <div class="chatline"><span class="who">Xcode AI</span></div>
+          <div class="chatline">I can help you build that. Here's a starting point&hellip;</div>
+          <div style="margin-top:8px;border:1px solid var(--line-2);border-radius:7px;padding:5px 8px;color:var(--faint)">Ask anything&hellip; <span style="float:right">&#8593;</span></div>
+        </div></div>
+      </div>
+      <div class="card">
+        <div class="cico">&gt;_</div>
+        <h3>Stay in flow</h3>
+        <p>A built-in terminal and tools, right where you work — real PTY shell, multiple sessions, no native build step.</p>
+        <div class="inset">
+          <div class="ibar"><span class="a">Terminal</span><span>Output</span><span>Problems</span></div>
+          <div class="ii tline">
+            <div>&gt; npm run dev</div>
+            <div class="mut">&gt; next dev</div>
+            <div><span class="ok">&#10003;</span> Ready in 878ms <span class="cur">&#9608;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ai">
+  <div class="wrap">
+    <div class="cards">
+      <div class="ai-copy">
+        <span class="tag">Xcode AI &middot; Coming soon</span>
+        <h2>An assistant that ships with your editor.</h2>
+        <p>Describe what you want in plain language. Xcode AI drafts the change across files, shows you a diff, and applies it only when you say so — an agent that works the way you review.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> Multi-file edits with a reviewable diff</li>
+          <li><span class="c">&#10003;</span> Generate, explain and refactor in place</li>
+          <li><span class="c">&#10003;</span> Agent &amp; ask modes, model of your choice</li>
+          <li><span class="c">&#10003;</span> Runs locally against your own API key</li>
+        </ul>
+      </div>
+      <div class="ai-visual">
+        <div class="row"><span class="spark">&#10022;</span> <b>Xcode AI</b> <span style="margin-left:auto;font-size:11px;color:#16a34a">&#9679; Online</span></div>
+        <div class="row"><span style="color:var(--faint)">You</span> Build a clean analytics dashboard</div>
+        <div class="row"><span class="spark">&#10022;</span> Created a responsive layout with reusable components.</div>
+        <div class="row">&#9635; 3 files updated <span style="margin-left:auto;color:#16a34a;font-family:var(--mono);font-size:11px">+82</span></div>
+        <div class="row"><span style="flex:1;text-align:center;border:1px solid var(--line);border-radius:7px;padding:6px;font-size:12px">Review</span><span style="flex:1;text-align:center;background:var(--orange);color:#fff;border-radius:7px;padding:6px;font-size:12px;font-weight:600">Apply all</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="feat-head" style="text-align:center;margin-bottom:34px">
+      <h2>Questions</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item"><summary>Is this related to Apple's Xcode? <span class="pm">+</span></summary><div class="a">No. Xcode by DataDropX is an independent cross-platform code editor. It is not made by, endorsed by, or affiliated with Apple, and it does not build iOS/macOS apps.</div></details>
+      <details class="faq-item"><summary>What platforms does it run on? <span class="pm">+</span></summary><div class="a">Windows is available now as a portable build and installer. macOS and Linux builds are in progress — star the repo to get notified.</div></details>
+      <details class="faq-item"><summary>How much memory does it use? <span class="pm">+</span></summary><div class="a">Around 150–230 MB idle on a typical machine, versus ~350 MB – 1 GB+ for a full IDE. The editor engine only loads when you open a file, and hardware acceleration is a toggle.</div></details>
+      <details class="faq-item"><summary>Is the AI assistant available yet? <span class="pm">+</span></summary><div class="a">Not in the current build — it's the next feature on the roadmap. Everything else (terminal, Emmet, themes, Markdown preview, cross-file search, VS Code settings import) ships today.</div></details>
+      <details class="faq-item"><summary>Is it free and open source? <span class="pm">+</span></summary><div class="a">Yes — MIT licensed. Source, releases and issues are on GitHub.</div></details>
+      <details class="faq-item"><summary>Can I bring my VS Code settings? <span class="pm">+</span></summary><div class="a">Yes. Settings → Import VS Code Settings reads your <code>settings.json</code> and maps font, theme, tab size, word wrap, format-on-save, auto-save and more.</div></details>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap">
+    <div class="cta-inner">
+      <div>
+        <h2>Your next project starts here.</h2>
+        <p>A more focused, more powerful way to code.</p>
+      </div>
+      <a class="btn btn-orange" id="cta-dl" href="#download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download Xcode
+      </a>
+    </div>
+  </div>
+</div>
+
+<section id="download" style="padding-top:0">
+  <div class="wrap">
+    <div class="feat-head" style="text-align:center;margin-bottom:34px">
+      <h2>Download</h2>
+      <p style="margin-inline:auto" id="dl-version">Fetching the latest release&hellip;</p>
+    </div>
+    <div class="cards" style="max-width:860px;margin:0 auto">
+      <div class="card" style="text-align:center;align-items:center">
+        <div class="cico">&#8862;</div>
+        <h3>Windows</h3>
+        <p>Windows 10 / 11 &middot; x64</p>
+        <a class="btn btn-orange" id="dl-win-btn" style="width:100%;justify-content:center" href="https://github.com/imadnanhassan/x-code/releases/latest" target="_blank" rel="noopener">Get for Windows</a>
+        <p style="margin:10px 0 0;font-size:12px" id="dl-win-alt"><a style="color:var(--orange)" href="https://github.com/imadnanhassan/x-code/releases/latest" target="_blank" rel="noopener">Portable .zip</a></p>
+      </div>
+      <div class="card" style="text-align:center;align-items:center;opacity:.6">
+        <div class="cico">&#63743;</div>
+        <h3>macOS</h3>
+        <p>Apple Silicon &amp; Intel</p>
+        <a class="btn btn-ghost" style="width:100%;justify-content:center" href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Coming soon</a>
+      </div>
+      <div class="card" style="text-align:center;align-items:center;opacity:.6">
+        <div class="cico">&#9705;</div>
+        <h3>Linux</h3>
+        <p>AppImage &amp; .deb</p>
+        <a class="btn btn-ghost" style="width:100%;justify-content:center" href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Coming soon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo">&lt;/&gt;</span> <b>Xcode</b><span>by DataDropX</span></a>
+    <div class="fl">
+      <a href="#features">Features</a>
+      <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/imadnanhassan/x-code/issues" target="_blank" rel="noopener">Contact</a>
+      <a href="https://github.com/imadnanhassan/x-code/blob/main/LICENSE" target="_blank" rel="noopener">Privacy</a>
+    </div>
+    <span>© <span id="year"></span> DataDropX · MIT · Not affiliated with Apple</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear()
+  var REPO = 'imadnanhassan/x-code'
+  var RELEASES = 'https://github.com/' + REPO + '/releases'
+
+  var ua = navigator.userAgent, plat = navigator.platform || '', os = 'other'
+  if (/Win/i.test(plat) || /Windows/i.test(ua)) os = 'win'
+  else if (/Mac/i.test(plat) || /Mac OS X/i.test(ua)) os = 'mac'
+  else if (/Linux|X11/i.test(plat) || /Linux/i.test(ua)) os = 'linux'
+
+  var heroBtn = document.getElementById('hero-dl')
+  var ctaBtn = document.getElementById('cta-dl')
+  if (os === 'mac') { heroBtn.querySelector('svg').style.display = 'none'; heroBtn.lastChild.textContent = ' macOS — coming soon'; }
+  else if (os === 'linux') { heroBtn.querySelector('svg').style.display = 'none'; heroBtn.lastChild.textContent = ' Linux — coming soon'; }
+
+  fetch('https://api.github.com/repos/' + REPO + '/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status) })
+    .then(function (rel) {
+      var v = rel.tag_name || rel.name || ''
+      var assets = rel.assets || []
+      function find(re) { var a = assets.find(function (x) { return re.test(x.name) }); return a && a.browser_download_url }
+      var winZip = find(/win.*\.zip$|x64\.zip$/i) || find(/\.zip$/i)
+      var winExe = find(/Setup.*\.exe$|\.exe$/i)
+
+      document.getElementById('dl-version').textContent = v
+        ? 'Latest release: ' + v + '  ·  ' + new Date(rel.published_at).toLocaleDateString()
+        : 'See all releases on GitHub.'
+
+      var winBtn = document.getElementById('dl-win-btn'), winAlt = document.getElementById('dl-win-alt')
+      if (winExe) { winBtn.href = winExe; winBtn.textContent = 'Download Installer' }
+      else if (winZip) { winBtn.href = winZip; winBtn.textContent = 'Download .zip' }
+      if (winZip && winExe) winAlt.innerHTML = '<a style="color:var(--orange)" href="' + winZip + '">Portable .zip</a>'
+      else winAlt.style.display = 'none'
+
+      var target = (os === 'win' && (winExe || winZip)) ? (winExe || winZip) : RELEASES
+      heroBtn.href = target; ctaBtn.href = target
+      document.getElementById('nav-dl').href = '#download'
+    })
+    .catch(function () {
+      document.getElementById('dl-version').innerHTML =
+        'Grab the latest build on <a style="color:var(--orange)" href="' + RELEASES + '">the releases page</a>.'
+      heroBtn.href = RELEASES; ctaBtn.href = RELEASES
+    })
+</script>
+</body>
+</html>

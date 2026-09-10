@@ -1,10 +1,13 @@
 import { app, BrowserWindow, ipcMain, session, shell } from 'electron'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import electronUpdater from 'electron-updater'
 import { registerIpc } from './ipc'
 import { registerPty, killAllPty } from './pty'
 
+const { autoUpdater } = electronUpdater
 const isDev = !app.isPackaged
+const ICON = join(__dirname, '../../build/icon.png')
 
 // Keep the settings/state directory stable whether run from source or packaged.
 app.setName('Xcode')
@@ -45,6 +48,7 @@ function createWindow(): void {
     minHeight: 480,
     show: false,
     frame: false,
+    icon: ICON,
     backgroundColor: '#1e1e2e',
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 12, y: 14 },
@@ -103,12 +107,42 @@ function registerWindowIpc(): void {
   })
 }
 
+function setupAutoUpdate(): void {
+  if (isDev) return
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.on('update-available', (info) =>
+    mainWindow?.webContents.send('update:available', info.version)
+  )
+  autoUpdater.on('update-downloaded', (info) =>
+    mainWindow?.webContents.send('update:downloaded', info.version)
+  )
+  autoUpdater.on('error', (err) => {
+    const msg = err?.message || String(err)
+    // A zip-only local build has no app-update.yml — that's expected, stay quiet.
+    if (!msg.includes('app-update.yml')) console.error('[xcode] auto-update:', msg)
+  })
+  ipcMain.on('update:install', () => autoUpdater.quitAndInstall())
+  ipcMain.handle('update:check', async () => {
+    try {
+      const r = await autoUpdater.checkForUpdates()
+      return { version: r?.updateInfo?.version ?? null }
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : String(err) }
+    }
+  })
+  if (readSettingSync('autoCheckUpdates', true)) {
+    setTimeout(() => void autoUpdater.checkForUpdates().catch(() => {}), 5000)
+  }
+}
+
 app.whenReady().then(() => {
   session.defaultSession.setSpellCheckerEnabled(false)
   registerWindowIpc()
   registerIpc(() => mainWindow)
   registerPty(() => mainWindow)
   createWindow()
+  setupAutoUpdate()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -20,8 +20,14 @@ export interface Settings {
   autoSaveDelay: number
   stickyScroll: boolean
   fontLigatures: boolean
+  emmet: boolean
+  formatOnPaste: boolean
+  trimTrailingWhitespace: boolean
+  insertFinalNewline: boolean
+  trimFinalNewlines: boolean
   hardwareAcceleration: boolean
   showMemoryUsage: boolean
+  autoCheckUpdates: boolean
   sidebarWidth: number
   panelHeight: number
   zoom: number
@@ -47,8 +53,14 @@ export const DEFAULT_SETTINGS: Settings = {
   autoSaveDelay: 800,
   stickyScroll: true,
   fontLigatures: true,
+  emmet: true,
+  formatOnPaste: true,
+  trimTrailingWhitespace: false,
+  insertFinalNewline: false,
+  trimFinalNewlines: false,
   hardwareAcceleration: true,
   showMemoryUsage: false,
+  autoCheckUpdates: true,
   sidebarWidth: 260,
   panelHeight: 240,
   zoom: 0

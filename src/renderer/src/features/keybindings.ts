@@ -7,6 +7,7 @@ const map: Record<Combo, string> = {
   'ctrl+shift+p': 'workbench.commandPalette',
   'ctrl+shift+e': 'view.explorer',
   'ctrl+shift+f': 'view.search',
+  'ctrl+shift+v': 'markdown.togglePreview',
   'ctrl+n': 'file.new',
   'ctrl+o': 'file.open',
   'ctrl+s': 'file.save',

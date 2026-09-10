@@ -63,7 +63,12 @@ const FIELDS: Field[] = [
   },
   { key: 'bracketPairColorization', label: 'Bracket Pair Colors', type: 'toggle', group: 'Editing' },
   { key: 'smoothScrolling', label: 'Smooth Scrolling', type: 'toggle', group: 'Editing' },
+  { key: 'emmet', label: 'Emmet (HTML/CSS abbreviations)', type: 'toggle', group: 'Editing', note: 'Type div.card>ul>li*3 then Tab. Disabling takes effect after restart.' },
   { key: 'formatOnSave', label: 'Format On Save', type: 'toggle', group: 'Editing' },
+  { key: 'formatOnPaste', label: 'Format On Paste', type: 'toggle', group: 'Editing' },
+  { key: 'trimTrailingWhitespace', label: 'Trim Trailing Whitespace On Save', type: 'toggle', group: 'Editing' },
+  { key: 'insertFinalNewline', label: 'Insert Final Newline On Save', type: 'toggle', group: 'Editing' },
+  { key: 'trimFinalNewlines', label: 'Trim Final Newlines On Save', type: 'toggle', group: 'Editing' },
   {
     key: 'autoSave', label: 'Auto Save', type: 'select', group: 'Editing',
     options: [
@@ -75,7 +80,8 @@ const FIELDS: Field[] = [
   { key: 'autoSaveDelay', label: 'Auto Save Delay (ms)', type: 'number', min: 200, max: 10000, step: 100, group: 'Editing' },
 
   { key: 'hardwareAcceleration', label: 'Hardware Acceleration', type: 'toggle', group: 'Performance', note: 'Turning this off drops the GPU process and lowers RAM by ~40–80 MB. Restart required.' },
-  { key: 'showMemoryUsage', label: 'Show Memory in Status Bar', type: 'toggle', group: 'Performance' }
+  { key: 'showMemoryUsage', label: 'Show Memory in Status Bar', type: 'toggle', group: 'Performance' },
+  { key: 'autoCheckUpdates', label: 'Automatically Check for Updates', type: 'toggle', group: 'Performance' }
 ]
 
 export function initSettingsPanel(): void {
@@ -104,6 +110,11 @@ function build(): void {
   $panel().innerHTML =
     html +
     `<div class="settings-group">
+       <h3>Migrate</h3>
+       <button class="btn" id="settings-import-vscode">Import VS Code Settings</button>
+       <div class="settings-note">Reads your VS Code <code>settings.json</code> (font, theme, tabs, format-on-save, …) and maps it across.</div>
+     </div>
+     <div class="settings-group">
        <button class="btn ghost" id="settings-reset">Reset all to defaults</button>
      </div>`
 
@@ -129,6 +140,12 @@ function build(): void {
     applyTheme(DEFAULT_SETTINGS.theme)
     sync()
     toast('Settings reset to defaults', 'ok')
+  })
+
+  $panel().querySelector('#settings-import-vscode')!.addEventListener('click', async () => {
+    const { importVSCodeSettings } = await import('./vscodeImport')
+    await importVSCodeSettings()
+    sync()
   })
 
   sync()

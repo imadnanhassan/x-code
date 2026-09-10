@@ -22,6 +22,10 @@ const MENUS: TopMenu[] = [
       { label: 'Save As…', hint: 'Ctrl+Shift+S', run: cmd('file.saveAs') },
       { label: 'Save All', hint: 'Ctrl+K S', run: cmd('file.saveAll') },
       { sep: true },
+      { label: 'Reveal in File Explorer', run: cmd('file.revealInOS') },
+      { label: 'Open in Default App', run: cmd('file.openInDefaultApp') },
+      { label: 'Import VS Code Settings…', run: cmd('preferences.importVSCode') },
+      { sep: true },
       { label: 'Close Editor', hint: 'Ctrl+W', run: cmd('file.close') },
       { label: 'Exit', run: () => window.xcode.window.close() }
     ]
@@ -38,7 +42,7 @@ const MENUS: TopMenu[] = [
       { sep: true },
       { label: 'Find', hint: 'Ctrl+F', run: editAction('actions.find') },
       { label: 'Replace', hint: 'Ctrl+H', run: editAction('editor.action.startFindReplaceAction') },
-      { label: 'Find in Files', hint: 'Ctrl+Shift+F', run: cmd('search.focus') },
+      { label: 'Find in Files', hint: 'Ctrl+Shift+F', run: cmd('view.search') },
       { sep: true },
       { label: 'Toggle Line Comment', hint: 'Ctrl+/', run: editAction('editor.action.commentLine') },
       { label: 'Format Document', hint: 'Shift+Alt+F', run: editAction('editor.action.formatDocument') }
@@ -55,6 +59,8 @@ const MENUS: TopMenu[] = [
       { label: 'Explorer', hint: 'Ctrl+Shift+E', run: cmd('view.explorer') },
       { label: 'Search', hint: 'Ctrl+Shift+F', run: cmd('view.search') },
       { sep: true },
+      { label: 'Markdown Preview', hint: 'Ctrl+Shift+V', run: cmd('markdown.togglePreview') },
+      { sep: true },
       { label: 'Color Theme…', hint: 'Ctrl+K Ctrl+T', run: cmd('theme.pick') },
       { label: 'Settings', hint: 'Ctrl+,', run: cmd('view.settings') },
       { sep: true },
@@ -68,6 +74,8 @@ const MENUS: TopMenu[] = [
     items: () => [
       { label: 'New Terminal', hint: 'Ctrl+`', run: cmd('terminal.new') },
       { label: 'Toggle Terminal', run: cmd('terminal.toggle') },
+      { label: 'Open Terminal at Selected Folder', run: cmd('terminal.here') },
+      { label: 'Run Command…', run: cmd('terminal.runCommand') },
       { sep: true },
       { label: 'Run npm install', run: () => bus.emit('terminal:run', 'npm install') },
       { label: 'Run npm run dev', run: () => bus.emit('terminal:run', 'npm run dev') }
@@ -77,6 +85,7 @@ const MENUS: TopMenu[] = [
     label: 'Help',
     items: () => [
       { label: 'Keyboard Shortcuts', run: cmd('help.shortcuts') },
+      { label: 'Check for Updates', run: cmd('help.checkUpdates') },
       { label: 'About Xcode', run: cmd('help.about') }
     ]
   }

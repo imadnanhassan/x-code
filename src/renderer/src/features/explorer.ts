@@ -236,9 +236,12 @@ function openContextMenu(x: number, y: number, target: string | null | undefined
       items.push({ sep: true })
     }
     if (!isDir) items.push({ label: 'Open', run: () => openPath(target) })
+    if (!isDir) items.push({ label: 'Open in Default App', run: () => window.xcode.os.openPath(target) })
     items.push({ label: 'Rename', run: () => renameFlow(target) })
     items.push({ label: 'Delete', run: () => deleteFlow(target) })
     items.push({ sep: true })
+    if (isDir) items.push({ label: 'Open Terminal Here', run: () => { selectedPath = target; bus.emit('terminal:new-here') } })
+    items.push({ label: 'Reveal in File Explorer', run: () => window.xcode.os.revealInFolder(target) })
     items.push({ label: 'Copy Path', run: () => navigator.clipboard.writeText(target) })
     items.push({
       label: 'Copy Relative Path',

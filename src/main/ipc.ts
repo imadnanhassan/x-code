@@ -1,6 +1,7 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import { promises as fs } from 'fs'
 import { constants as fsConstants } from 'fs'
+import { homedir } from 'os'
 import { basename, dirname, extname, join, relative, sep } from 'path'
 
 type GetWin = () => BrowserWindow | null
@@ -286,5 +287,63 @@ export function registerIpc(getWin: GetWin): void {
 
   ipcMain.on('app:set-title', (_e, title: string) => {
     getWin()?.setTitle(title)
+  })
+
+  /* ---- OS integration ---- */
+  ipcMain.on('os:reveal', (_e, target: string) => shell.showItemInFolder(target))
+  ipcMain.handle('os:open-path', (_e, target: string) => shell.openPath(target))
+  ipcMain.on('os:open-external', (_e, url: string) => {
+    if (/^https?:\/\//i.test(url)) shell.openExternal(url)
+  })
+
+  /* ---- VS Code settings import ---- */
+  ipcMain.handle('vscode:find-settings', async () => {
+    const home = homedir()
+    const candidates =
+      process.platform === 'win32'
+        ? [
+            join(process.env.APPDATA || join(home, 'AppData/Roaming'), 'Code/User/settings.json'),
+            join(process.env.APPDATA || join(home, 'AppData/Roaming'), 'Code - Insiders/User/settings.json'),
+            join(home, 'AppData/Roaming/VSCodium/User/settings.json'),
+            join(home, 'AppData/Roaming/Cursor/User/settings.json')
+          ]
+        : process.platform === 'darwin'
+          ? [
+              join(home, 'Library/Application Support/Code/User/settings.json'),
+              join(home, 'Library/Application Support/Code - Insiders/User/settings.json'),
+              join(home, 'Library/Application Support/VSCodium/User/settings.json'),
+              join(home, 'Library/Application Support/Cursor/User/settings.json')
+            ]
+          : [
+              join(home, '.config/Code/User/settings.json'),
+              join(home, '.config/Code - Insiders/User/settings.json'),
+              join(home, '.config/VSCodium/User/settings.json'),
+              join(home, '.config/Cursor/User/settings.json')
+            ]
+    for (const p of candidates) {
+      try {
+        const content = await fs.readFile(p, 'utf8')
+        return { path: p, content }
+      } catch {
+        /* next */
+      }
+    }
+    return null
+  })
+
+  ipcMain.handle('vscode:pick-settings', async () => {
+    const win = getWin()
+    const res = await dialog.showOpenDialog(win!, {
+      title: 'Select a VS Code settings.json',
+      properties: ['openFile'],
+      filters: [{ name: 'JSON', extensions: ['json', 'jsonc'] }]
+    })
+    if (res.canceled || !res.filePaths[0]) return null
+    try {
+      const content = await fs.readFile(res.filePaths[0], 'utf8')
+      return { path: res.filePaths[0], content }
+    } catch {
+      return null
+    }
   })
 }

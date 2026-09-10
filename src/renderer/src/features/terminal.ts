@@ -6,6 +6,7 @@ import { bus, Ev } from '../core/bus'
 import { store } from '../core/store'
 import { getTheme } from './themes'
 import { toast } from './toast'
+import { currentSelection } from './explorer'
 
 interface Session {
   id: number
@@ -71,6 +72,21 @@ export async function initTerminal(): Promise<void> {
   document.getElementById('panel-close')!.addEventListener('click', () => togglePanel(false))
   $select().addEventListener('change', () => selectSession(Number($select().value)))
 
+  bus.on('terminal:new', () => void createSession())
+  bus.on('terminal:new-here', async () => {
+    const sel = currentSelection()
+    let dir = store.rootPath || undefined
+    if (sel) {
+      try {
+        const st = await window.xcode.fs.stat(sel)
+        dir = st.isDirectory ? sel : sel.replace(/[\\/][^\\/]*$/, '')
+      } catch {
+        /* use root */
+      }
+    }
+    void createSession(dir)
+  })
+
   bus.on(Ev.themeChanged, () => {
     const t = xtermTheme()
     sessions.forEach((s) => (s.term.options.theme = t))
@@ -115,7 +131,7 @@ export function panelVisible(): boolean {
   return !$panel().hidden
 }
 
-async function createSession(): Promise<void> {
+async function createSession(cwd?: string): Promise<void> {
   mounted = true
   togglePanelEnsure()
   if (!ptyOk) {
@@ -143,17 +159,24 @@ async function createSession(): Promise<void> {
   fitAddon.fit()
 
   const res = await window.xcode.pty.spawn({
-    cwd: store.rootPath || undefined,
+    cwd: cwd || store.rootPath || undefined,
     cols: term.cols,
     rows: term.rows
   })
   if (res.id < 0) {
-    toast('Terminal unavailable: ' + (res.error || 'node-pty missing'), 'error')
+    toast('Terminal unavailable: ' + (res.error || 'shell could not start'), 'error')
     el.remove()
     return
   }
 
-  const session: Session = { id: res.id, term, fit: fitAddon, el, title: `Terminal ${sessions.size + 1}`, disposers: [] }
+  const session: Session = {
+    id: res.id,
+    term,
+    fit: fitAddon,
+    el,
+    title: res.shell ? `${res.shell} ${sessions.size + 1}` : `Terminal ${sessions.size + 1}`,
+    disposers: []
+  }
   sessions.set(res.id, session)
 
   const d1 = term.onData((d) => window.xcode.pty.input(res.id, d))
