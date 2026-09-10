@@ -13,6 +13,16 @@ const $view = () => document.querySelector('.panel-view[data-panel="problems"]')
 const $tab = () => document.querySelector('.panel-tab[data-panel="problems"]') as HTMLElement
 const $sb = () => document.getElementById('sb-problems') as HTMLElement
 
+const MAX_ROWS = 500
+let refreshTimer: number | undefined
+let refreshing = false
+
+function refresh(): void {
+  // coalesce the storm of onDidChangeMarkers events the TS worker emits
+  if (refreshTimer) window.clearTimeout(refreshTimer)
+  refreshTimer = window.setTimeout(doRefresh, 180)
+}
+
 export function initProblems(): void {
   monaco.editor.onDidChangeMarkers(() => refresh())
   bus.on('file:opened', () => refresh())
@@ -23,19 +33,31 @@ export function initProblems(): void {
     bus.emit('panel:show', 'problems')
   })
 
-  refresh()
+  doRefresh()
 }
 
-function refresh(): void {
-  const markers = monaco.editor.getModelMarkers({}).filter((m) => m.severity >= monaco.MarkerSeverity.Info)
+function doRefresh(): void {
+  if (refreshing) return
+  refreshing = true
+  try {
+    render()
+  } finally {
+    refreshing = false
+  }
+}
+
+function render(): void {
+  const all = monaco.editor.getModelMarkers({}).filter((m) => m.severity >= monaco.MarkerSeverity.Info)
   let errors = 0
   let warnings = 0
-  const byFile = new Map<string, Row[]>()
-
-  for (const m of markers) {
+  for (const m of all) {
     if (m.severity === monaco.MarkerSeverity.Error) errors++
     else if (m.severity === monaco.MarkerSeverity.Warning) warnings++
-    const uri = monaco.Uri.parse(m.resource.toString())
+  }
+
+  const byFile = new Map<string, Row[]>()
+  for (const m of all.slice(0, MAX_ROWS)) {
+    const uri = m.resource
     const key = uri.toString()
     if (!byFile.has(key)) byFile.set(key, [])
     byFile.get(key)!.push({ uri, fsPath: uri.fsPath, marker: m })

@@ -75,16 +75,21 @@ function scheduleRefresh(): void {
   refreshTimer = window.setTimeout(() => refresh(false), 400)
 }
 
+let refreshing = false
 export async function refresh(showEmpty = false): Promise<void> {
   if (!store.rootPath) {
     last = { repo: false, ahead: 0, behind: 0, files: [] }
     render(showEmpty)
     return
   }
+  if (refreshing) return
+  refreshing = true
   try {
     last = (await window.xcode.git.status(store.rootPath)) as GitStatus
   } catch {
     last = { repo: false, ahead: 0, behind: 0, files: [] }
+  } finally {
+    refreshing = false
   }
   render(showEmpty)
   updateBranch()

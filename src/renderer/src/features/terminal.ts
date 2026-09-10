@@ -109,9 +109,16 @@ export async function initTerminal(): Promise<void> {
     })
   })
 
-  new ResizeObserver(() => {
-    const s = activeId != null ? sessions.get(activeId) : null
-    if (s) fit(s)
+  let fitRaf = 0
+  new ResizeObserver((entries) => {
+    const box = entries[0]?.contentRect
+    // ignore the 0×0 resize that fires when the panel/tab is hidden
+    if (!box || box.width < 2 || box.height < 2 || $panel().hidden) return
+    cancelAnimationFrame(fitRaf)
+    fitRaf = requestAnimationFrame(() => {
+      const s = activeId != null ? sessions.get(activeId) : null
+      if (s) fit(s)
+    })
   }).observe($host())
 
   setupResizer()
