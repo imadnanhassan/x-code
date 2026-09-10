@@ -45,7 +45,9 @@ const MENUS: TopMenu[] = [
       { label: 'Find in Files', hint: 'Ctrl+Shift+F', run: cmd('view.search') },
       { sep: true },
       { label: 'Toggle Line Comment', hint: 'Ctrl+/', run: editAction('editor.action.commentLine') },
-      { label: 'Format Document', hint: 'Shift+Alt+F', run: editAction('editor.action.formatDocument') }
+      { label: 'Format Document', hint: 'Shift+Alt+F', run: editAction('editor.action.formatDocument') },
+      { label: 'Organize Imports', hint: 'Shift+Alt+O', run: cmd('editor.organizeImports') },
+      { label: 'Rename Symbol', hint: 'F2', run: editAction('editor.action.rename') }
     ]
   },
   {
@@ -61,6 +63,7 @@ const MENUS: TopMenu[] = [
       { sep: true },
       { label: 'Markdown Preview', hint: 'Ctrl+Shift+V', run: cmd('markdown.togglePreview') },
       { label: 'Problems', hint: 'Ctrl+Shift+M', run: cmd('problems.show') },
+      { label: 'TODOs & FIXMEs', hint: 'Ctrl+Shift+T', run: cmd('todos.show') },
       { label: 'Local History (active file)', run: cmd('localHistory.show') },
       { sep: true },
       { label: 'Color Theme…', hint: 'Ctrl+K Ctrl+T', run: cmd('theme.pick') },

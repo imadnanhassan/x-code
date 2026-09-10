@@ -105,7 +105,11 @@ const api = {
       ipcRenderer.invoke('git:commit', { cwd, message, amend }),
     push: (cwd: string) => ipcRenderer.invoke('git:push', { cwd }),
     pull: (cwd: string) => ipcRenderer.invoke('git:pull', { cwd }),
-    log: (cwd: string, limit?: number) => ipcRenderer.invoke('git:log', { cwd, limit })
+    log: (cwd: string, limit?: number) => ipcRenderer.invoke('git:log', { cwd, limit }),
+    branches: (cwd: string): Promise<{ current: string; local: string[]; remote: string[] }> =>
+      ipcRenderer.invoke('git:branches', { cwd }),
+    checkout: (cwd: string, branch: string, create?: boolean): Promise<{ ok: boolean; message: string }> =>
+      ipcRenderer.invoke('git:checkout', { cwd, branch, create })
   },
 
   update: {

@@ -12,6 +12,8 @@ export const DEFAULT_KEYMAP: Record<string, string> = {
   'markdown.togglePreview': 'ctrl+shift+v',
   'problems.show': 'ctrl+shift+m',
   'tasks.run': 'ctrl+shift+b',
+  'todos.show': 'ctrl+shift+t',
+  'editor.organizeImports': 'shift+alt+o',
   'file.new': 'ctrl+n',
   'file.open': 'ctrl+o',
   'file.save': 'ctrl+s',

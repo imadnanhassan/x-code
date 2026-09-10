@@ -21,7 +21,12 @@ export interface Settings {
   stickyScroll: boolean
   fontLigatures: boolean
   emmet: boolean
+  snippets: boolean
+  pathCompletion: boolean
+  errorLens: boolean
+  maskEnvValues: boolean
   formatOnPaste: boolean
+  organizeImportsOnSave: boolean
   trimTrailingWhitespace: boolean
   insertFinalNewline: boolean
   trimFinalNewlines: boolean
@@ -55,7 +60,12 @@ export const DEFAULT_SETTINGS: Settings = {
   stickyScroll: true,
   fontLigatures: true,
   emmet: true,
+  snippets: true,
+  pathCompletion: true,
+  errorLens: true,
+  maskEnvValues: true,
   formatOnPaste: true,
+  organizeImportsOnSave: false,
   trimTrailingWhitespace: false,
   insertFinalNewline: false,
   trimFinalNewlines: false,

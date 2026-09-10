@@ -289,11 +289,20 @@ async function saveTab(t: Tab, as = false): Promise<void> {
     if (!chosen) return
     path = chosen
   }
-  if (store.settings.formatOnSave && current() === t) {
-    try {
-      await editor.getAction('editor.action.formatDocument')?.run()
-    } catch {
-      /* no formatter for this language */
+  if (current() === t) {
+    if (store.settings.organizeImportsOnSave) {
+      try {
+        await editor.getAction('editor.action.organizeImports')?.run()
+      } catch {
+        /* not supported for this language */
+      }
+    }
+    if (store.settings.formatOnSave) {
+      try {
+        await editor.getAction('editor.action.formatDocument')?.run()
+      } catch {
+        /* no formatter for this language */
+      }
     }
   }
   applySaveCleanups(t.model)

@@ -168,4 +168,25 @@ export function registerGit(): void {
         return { hash, author, when, subject }
       })
   })
+
+  ipcMain.handle('git:branches', async (_e, o: Opts) => {
+    const cur = (await git(o.cwd, ['rev-parse', '--abbrev-ref', 'HEAD'])).stdout.trim()
+    const r = await git(o.cwd, ['branch', '--list', '--format=%(refname:short)'])
+    const local = r.code === 0 ? r.stdout.split('\n').map((s) => s.trim()).filter(Boolean) : []
+    const rr = await git(o.cwd, ['branch', '-r', '--format=%(refname:short)'])
+    const remote =
+      rr.code === 0
+        ? rr.stdout
+            .split('\n')
+            .map((s) => s.trim())
+            .filter((s) => s && !s.includes('->'))
+        : []
+    return { current: cur, local, remote }
+  })
+
+  ipcMain.handle('git:checkout', async (_e, o: Opts & { branch: string; create?: boolean }) => {
+    const args = o.create ? ['checkout', '-b', o.branch] : ['checkout', o.branch]
+    const r = await git(o.cwd, args)
+    return { ok: r.code === 0, message: (r.stderr || r.stdout).trim() }
+  })
 }

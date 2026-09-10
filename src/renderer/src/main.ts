@@ -21,11 +21,15 @@ import { enableEmmet } from './features/monaco'
 import { initMarkdownPreview, toggleMarkdownPreview } from './features/markdownPreview'
 import { importVSCodeSettings } from './features/vscodeImport'
 import { initUpdater, checkForUpdatesNow } from './features/updater'
-import { initGit } from './features/git'
+import { initGit, switchBranch, showGitHistory } from './features/git'
 import { initProblems } from './features/problems'
 import { initLocalHistory, showLocalHistory } from './features/localHistory'
 import { runTask, rerunLastTask, configureTasks } from './features/tasks'
 import { openKeymapEditor } from './features/keymapEditor'
+import { initLanguageExtras, configureSnippets } from './features/languageExtras'
+import { initErrorLens } from './features/errorLens'
+import { initEnvMask, toggleEnvReveal } from './features/envMask'
+import { showTodos } from './features/todos'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -41,6 +45,9 @@ async function boot(): Promise<void> {
   initGit()
   initProblems()
   initLocalHistory()
+  initLanguageExtras()
+  initErrorLens()
+  initEnvMask()
   initUpdater()
   await initTerminal()
   if (store.settings.emmet) void enableEmmet()
@@ -108,6 +115,13 @@ function registerAllCommands(): void {
     { id: 'tasks.run', title: 'Run Task…', category: 'Tasks', keybinding: 'Ctrl+Shift+B', run: runTask },
     { id: 'tasks.rerun', title: 'Rerun Last Task', category: 'Tasks', run: rerunLastTask },
     { id: 'tasks.configure', title: 'Configure Tasks', category: 'Tasks', run: configureTasks },
+    { id: 'editor.organizeImports', title: 'Organize Imports', category: 'Editor', keybinding: 'Shift+Alt+O', run: () => getEditor()?.getAction('editor.action.organizeImports')?.run() },
+    { id: 'editor.fixAll', title: 'Fix All Auto-fixable Problems', category: 'Editor', run: () => getEditor()?.getAction('editor.action.autoFix')?.run() },
+    { id: 'snippets.configure', title: 'Configure User Snippets', category: 'Preferences', run: configureSnippets },
+    { id: 'todos.show', title: 'Show TODOs & FIXMEs', category: 'View', run: showTodos },
+    { id: 'env.toggleReveal', title: 'Toggle .env Value Masking', category: 'Editor', run: toggleEnvReveal },
+    { id: 'git.branches', title: 'Checkout / Switch Branch', category: 'Git', run: switchBranch },
+    { id: 'git.history', title: 'Commit History', category: 'Git', run: showGitHistory },
 
     { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', keybinding: 'Ctrl+K Ctrl+S', run: openKeymapEditor },
     { id: 'keybindings.open', title: 'Open Keyboard Shortcuts', category: 'Preferences', run: openKeymapEditor },

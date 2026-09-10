@@ -1,6 +1,7 @@
 import { bus, Ev } from '../core/bus'
 import { store } from '../core/store'
 import { openPath } from './editor'
+import { openPicker } from './commands'
 import { fileIcon } from './icons'
 import { toast } from './toast'
 
@@ -39,13 +40,15 @@ export function initGit(): void {
     `<button data-g="commit" title="Commit">&#xE73E;</button>` +
     `<button data-g="pull" title="Pull">&#xE74B;</button>` +
     `<button data-g="push" title="Push">&#xE74A;</button>` +
+    `<button data-g="branch" title="Switch Branch">&#xE0A0;</button>` +
+    `<button data-g="history" title="Commit History">&#xE81C;</button>` +
     `<button data-g="refresh" title="Refresh">&#xE72C;</button>` +
     `</div>`
   $head().querySelectorAll<HTMLButtonElement>('button[data-g]').forEach((b) => {
     b.addEventListener('click', () => onAction(b.dataset.g!))
   })
 
-  $branch().addEventListener('click', () => bus.emit('command:run', 'view.git'))
+  $branch().addEventListener('click', () => void switchBranch())
 
   bus.on(Ev.workspaceOpened, () => refresh(true))
   bus.on(Ev.fileSaved, () => scheduleRefresh())
@@ -288,6 +291,8 @@ async function onAction(kind: string): Promise<void> {
   if (kind === 'refresh') return void refresh(true)
   if (kind === 'commit') return void doCommit()
   if (kind === 'init') return onInit()
+  if (kind === 'branch') return void switchBranch()
+  if (kind === 'history') return void showGitHistory()
   if (kind === 'push' || kind === 'pull') {
     busy = true
     toast(kind === 'push' ? 'Pushing…' : 'Pulling…', 'info', 1500)
@@ -349,6 +354,76 @@ function updateBadge(): void {
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
+}
+
+/* ---------------- branches & history ---------------- */
+
+export async function switchBranch(): Promise<void> {
+  if (!store.rootPath || !last.repo) {
+    toast('Not a Git repository', 'warn')
+    return
+  }
+  const b = await window.xcode.git.branches(store.rootPath)
+  const items: any[] = [
+    { label: '＋  Create new branch…', description: 'from ' + b.current, run: () => createBranchFlow() }
+  ]
+  for (const name of b.local) {
+    items.push({
+      label: (name === b.current ? '● ' : '   ') + name,
+      description: name === b.current ? 'current' : '',
+      run: () => name !== b.current && doCheckout(name, false)
+    })
+  }
+  for (const name of b.remote) {
+    const short = name.replace(/^origin\//, '')
+    if (b.local.includes(short)) continue
+    items.push({ label: '   ' + name, description: 'remote', run: () => doCheckout(short, false) })
+  }
+  openPicker({ placeholder: 'Switch branch', items, matchOnDescription: true })
+}
+
+function createBranchFlow(): void {
+  openPicker({
+    placeholder: 'New branch name, then Enter',
+    live: true,
+    items: (q) => {
+      const name = q.trim().replace(/\s+/g, '-')
+      return [{ label: name ? `Create and switch to '${name}'` : 'Type a branch name…', run: () => { if (name) void doCheckout(name, true) } }]
+    }
+  })
+}
+
+async function doCheckout(branch: string, create: boolean): Promise<void> {
+  if (!store.rootPath) return
+  const r = await window.xcode.git.checkout(store.rootPath, branch, create)
+  toast(r.ok ? `On branch ${branch}` : r.message || 'checkout failed', r.ok ? 'ok' : 'error')
+  await refresh(true)
+}
+
+export async function showGitHistory(): Promise<void> {
+  if (!store.rootPath || !last.repo) {
+    toast('Not a Git repository', 'warn')
+    return
+  }
+  const log = (await window.xcode.git.log(store.rootPath, 80)) as {
+    hash: string
+    author: string
+    when: string
+    subject: string
+  }[]
+  if (!log.length) {
+    toast('No commits yet', 'info')
+    return
+  }
+  openPicker({
+    placeholder: `History — ${last.branch || ''}`,
+    matchOnDescription: true,
+    items: log.map((c) => ({
+      label: c.subject,
+      description: `${c.hash}  ·  ${c.author}  ·  ${c.when}`,
+      run: () => navigator.clipboard.writeText(c.hash).then(() => toast(`Copied ${c.hash}`, 'ok', 1200))
+    }))
+  })
 }
 
 export function gitStatusRel(absPath: string): { i: string; w: string } | undefined {
