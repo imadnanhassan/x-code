@@ -123,8 +123,11 @@ body.resizing * {
   cursor: col-resize !important;
   user-select: none !important;
 }
-#panel-resizer.resizer-h ~ *,
-body.resizing #panel {
+/* only while a splitter is being dragged — never otherwise */
+body.resizing #panel,
+body.resizing #main,
+body.resizing iframe,
+body.resizing .xterm {
   pointer-events: none;
 }
 
