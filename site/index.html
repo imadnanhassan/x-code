@@ -544,7 +544,7 @@
     </div>
     <div class="faq-list">
       <details class="faq-item"><summary>Is this related to Apple's Xcode? <span class="pm">+</span></summary><div class="a">No. Xcode by DataDropX is an independent cross-platform code editor. It is not made by, endorsed by, or affiliated with Apple, and it does not build iOS/macOS apps.</div></details>
-      <details class="faq-item"><summary>What platforms does it run on? <span class="pm">+</span></summary><div class="a">Windows is available now as a portable build and installer. macOS and Linux builds are in progress — star the repo to get notified.</div></details>
+      <details class="faq-item"><summary>What platforms does it run on? <span class="pm">+</span></summary><div class="a">Windows 10/11 (x64) is available now as a one-click <code>.exe</code> installer. macOS and Linux builds are in progress — star the repo to get notified.</div></details>
       <details class="faq-item"><summary>How much memory does it use? <span class="pm">+</span></summary><div class="a">Around 150–230 MB idle on a typical machine, versus ~350 MB – 1 GB+ for a full IDE. The editor engine only loads when you open a file, and hardware acceleration is a toggle.</div></details>
       <details class="faq-item"><summary>Is the AI assistant available yet? <span class="pm">+</span></summary><div class="a">Not in the current build — it's the next feature on the roadmap. Everything else ships today: full source control (diff, blame, branches, conflict resolution), integrated terminal, ESLint/Prettier, live preview, an API client, Emmet &amp; snippets, Problems &amp; Error Lens, Markdown preview, local history, spell check, editable shortcuts, VS Code settings import and 9 themes.</div></details>
       <details class="faq-item"><summary>Is it free and open source? <span class="pm">+</span></summary><div class="a">Yes — MIT licensed. Source, releases and issues are on GitHub.</div></details>
@@ -579,8 +579,8 @@
         <div class="cico">&#8862;</div>
         <h3>Windows</h3>
         <p>Windows 10 / 11 &middot; x64</p>
-        <a class="btn btn-orange" id="dl-win-btn" style="width:100%;justify-content:center" href="https://github.com/imadnanhassan/x-code/releases/latest" target="_blank" rel="noopener">Get for Windows</a>
-        <p style="margin:10px 0 0;font-size:12px" id="dl-win-alt"><a style="color:var(--orange)" href="https://github.com/imadnanhassan/x-code/releases/latest" target="_blank" rel="noopener">Portable .zip</a></p>
+        <a class="btn btn-orange" id="dl-win-btn" style="width:100%;justify-content:center" href="https://github.com/imadnanhassan/x-code/releases/latest" target="_blank" rel="noopener">Download for Windows</a>
+        <p style="margin:10px 0 0;font-size:12px;color:var(--faint)" id="dl-win-alt">.exe installer &middot; ~82&nbsp;MB</p>
       </div>
       <div class="card" style="text-align:center;align-items:center;opacity:.6">
         <div class="cico">&#63743;</div>
@@ -632,20 +632,21 @@
       var v = rel.tag_name || rel.name || ''
       var assets = rel.assets || []
       function find(re) { var a = assets.find(function (x) { return re.test(x.name) }); return a && a.browser_download_url }
-      var winZip = find(/win.*\.zip$|x64\.zip$/i) || find(/\.zip$/i)
-      var winExe = find(/Setup.*\.exe$|\.exe$/i)
+      var winExe = find(/Setup.*\.exe$/i) || find(/\.exe$/i)
+      var winExeAsset = assets.find(function (x) { return /\.exe$/i.test(x.name) })
 
       document.getElementById('dl-version').textContent = v
         ? 'Latest release: ' + v + '  ·  ' + new Date(rel.published_at).toLocaleDateString()
         : 'See all releases on GitHub.'
 
       var winBtn = document.getElementById('dl-win-btn'), winAlt = document.getElementById('dl-win-alt')
-      if (winExe) { winBtn.href = winExe; winBtn.textContent = 'Download Installer' }
-      else if (winZip) { winBtn.href = winZip; winBtn.textContent = 'Download .zip' }
-      if (winZip && winExe) winAlt.innerHTML = '<a style="color:var(--orange)" href="' + winZip + '">Portable .zip</a>'
-      else winAlt.style.display = 'none'
+      if (winExe) {
+        winBtn.href = winExe
+        winBtn.textContent = 'Download for Windows'
+        if (winExeAsset) winAlt.textContent = '.exe installer · ' + (winExeAsset.size / 1048576).toFixed(0) + ' MB'
+      }
 
-      var target = (os === 'win' && (winExe || winZip)) ? (winExe || winZip) : RELEASES
+      var target = (os === 'win' && winExe) ? winExe : RELEASES
       heroBtn.href = target; ctaBtn.href = target
       document.getElementById('nav-dl').href = '#download'
     })

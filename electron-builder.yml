@@ -26,8 +26,6 @@ publish:
   releaseType: release
 win:
   target:
-    - target: zip
-      arch: [x64]
     - target: nsis
       arch: [x64]
   # Unsigned personal build — skip electron-builder's win code-sign toolchain
