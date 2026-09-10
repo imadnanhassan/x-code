@@ -4,6 +4,12 @@
   height: 100%;
   background: var(--bg);
 }
+/* explicit placement so overlay/hidden children (palette, context menu, toasts)
+   never steal a track — the `auto` row collapses to 0 while the banner is hidden */
+#titlebar { grid-row: 1; }
+#update-banner { grid-row: 2; }
+#body { grid-row: 3; }
+#statusbar { grid-row: 4; }
 
 #update-banner {
   display: flex;

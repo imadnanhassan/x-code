@@ -5,6 +5,8 @@ import electronUpdater from 'electron-updater'
 import { registerIpc } from './ipc'
 import { registerPty, killAllPty } from './pty'
 import { registerGit } from './git'
+import { registerHistory } from './history'
+import { registerTasks } from './tasks'
 
 const { autoUpdater } = electronUpdater
 const isDev = !app.isPackaged
@@ -161,6 +163,8 @@ app.whenReady().then(() => {
   registerIpc(() => mainWindow)
   registerPty(() => mainWindow)
   registerGit()
+  registerHistory()
+  registerTasks()
   createWindow()
   setupAutoUpdate()
 

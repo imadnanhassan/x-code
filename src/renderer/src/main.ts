@@ -22,6 +22,9 @@ import { initMarkdownPreview, toggleMarkdownPreview } from './features/markdownP
 import { importVSCodeSettings } from './features/vscodeImport'
 import { initUpdater, checkForUpdatesNow } from './features/updater'
 import { initGit } from './features/git'
+import { initProblems } from './features/problems'
+import { initLocalHistory, showLocalHistory } from './features/localHistory'
+import { runTask, rerunLastTask, configureTasks } from './features/tasks'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -35,6 +38,8 @@ async function boot(): Promise<void> {
   initStatusbar()
   initMarkdownPreview()
   initGit()
+  initProblems()
+  initLocalHistory()
   initUpdater()
   await initTerminal()
   if (store.settings.emmet) void enableEmmet()
@@ -96,6 +101,11 @@ function registerAllCommands(): void {
     { id: 'editor.toggleMinimap', title: 'Toggle Minimap', category: 'View', run: () => store.updateSettings({ minimap: !store.settings.minimap }) },
     { id: 'editor.toggleIndent', title: 'Toggle Tabs / Spaces', category: 'Editor', run: () => store.updateSettings({ insertSpaces: !store.settings.insertSpaces }) },
     { id: 'markdown.togglePreview', title: 'Toggle Markdown Preview', category: 'View', keybinding: 'Ctrl+Shift+V', run: toggleMarkdownPreview },
+    { id: 'problems.show', title: 'Show Problems', category: 'View', keybinding: 'Ctrl+Shift+M', run: () => bus.emit('panel:show', 'problems') },
+    { id: 'localHistory.show', title: 'Local History: Show for Active File', category: 'Editor', run: showLocalHistory },
+    { id: 'tasks.run', title: 'Run Task…', category: 'Tasks', keybinding: 'Ctrl+Shift+B', run: runTask },
+    { id: 'tasks.rerun', title: 'Rerun Last Task', category: 'Tasks', run: rerunLastTask },
+    { id: 'tasks.configure', title: 'Configure Tasks', category: 'Tasks', run: configureTasks },
 
     { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', run: showShortcuts },
     { id: 'help.checkUpdates', title: 'Check for Updates', category: 'Help', run: checkForUpdatesNow },
@@ -319,14 +329,21 @@ function wireChrome(): void {
   })
 
   // panel tabs
-  document.querySelectorAll<HTMLButtonElement>('.panel-tab[data-panel]').forEach((b) => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.panel-tab').forEach((x) => x.classList.remove('active'))
-      b.classList.add('active')
-      document.querySelectorAll<HTMLElement>('.panel-view').forEach((v) => {
-        v.hidden = v.dataset.panel !== b.dataset.panel
-      })
+  const showPanelTab = (name: string): void => {
+    document.querySelectorAll<HTMLElement>('.panel-tab').forEach((x) =>
+      x.classList.toggle('active', x.dataset.panel === name)
+    )
+    document.querySelectorAll<HTMLElement>('.panel-view').forEach((v) => {
+      v.hidden = v.dataset.panel !== name
     })
+  }
+  document.querySelectorAll<HTMLButtonElement>('.panel-tab[data-panel]').forEach((b) => {
+    b.addEventListener('click', () => showPanelTab(b.dataset.panel!))
+  })
+  bus.on('panel:show', (name: string) => {
+    const panel = document.getElementById('panel')!
+    if (panel.hidden) bus.emit('command:run', 'terminal.toggle')
+    showPanelTab(name)
   })
 
   // welcome buttons

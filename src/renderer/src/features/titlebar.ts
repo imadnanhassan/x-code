@@ -60,6 +60,8 @@ const MENUS: TopMenu[] = [
       { label: 'Search', hint: 'Ctrl+Shift+F', run: cmd('view.search') },
       { sep: true },
       { label: 'Markdown Preview', hint: 'Ctrl+Shift+V', run: cmd('markdown.togglePreview') },
+      { label: 'Problems', hint: 'Ctrl+Shift+M', run: cmd('problems.show') },
+      { label: 'Local History (active file)', run: cmd('localHistory.show') },
       { sep: true },
       { label: 'Color Theme…', hint: 'Ctrl+K Ctrl+T', run: cmd('theme.pick') },
       { label: 'Settings', hint: 'Ctrl+,', run: cmd('view.settings') },
@@ -77,8 +79,9 @@ const MENUS: TopMenu[] = [
       { label: 'Open Terminal at Selected Folder', run: cmd('terminal.here') },
       { label: 'Run Command…', run: cmd('terminal.runCommand') },
       { sep: true },
-      { label: 'Run npm install', run: () => bus.emit('terminal:run', 'npm install') },
-      { label: 'Run npm run dev', run: () => bus.emit('terminal:run', 'npm run dev') }
+      { label: 'Run Task…', hint: 'Ctrl+Shift+B', run: cmd('tasks.run') },
+      { label: 'Rerun Last Task', run: cmd('tasks.rerun') },
+      { label: 'Configure Tasks…', run: cmd('tasks.configure') }
     ]
   },
   {

@@ -8,6 +8,8 @@ const map: Record<Combo, string> = {
   'ctrl+shift+e': 'view.explorer',
   'ctrl+shift+f': 'view.search',
   'ctrl+shift+v': 'markdown.togglePreview',
+  'ctrl+shift+m': 'problems.show',
+  'ctrl+shift+b': 'tasks.run',
   'ctrl+n': 'file.new',
   'ctrl+o': 'file.open',
   'ctrl+s': 'file.save',

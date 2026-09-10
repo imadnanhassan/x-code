@@ -76,6 +76,23 @@ const api = {
       ipcRenderer.invoke('vscode:pick-settings')
   },
 
+  history: {
+    record: (path: string, content: string) =>
+      ipcRenderer.invoke('history:record', { path, content }),
+    list: (path: string): Promise<{ id: number; ts: number; size: number }[]> =>
+      ipcRenderer.invoke('history:list', { path }),
+    read: (path: string, id: number): Promise<string | null> =>
+      ipcRenderer.invoke('history:read', { path, id }),
+    restore: (path: string, id: number, current: string): Promise<{ ok: boolean; content?: string; message?: string }> =>
+      ipcRenderer.invoke('history:restore', { path, id, current }),
+    clear: (path: string) => ipcRenderer.invoke('history:clear', { path })
+  },
+
+  tasks: {
+    discover: (root: string): Promise<any[]> => ipcRenderer.invoke('tasks:discover', { root }),
+    configure: (root: string): Promise<string> => ipcRenderer.invoke('tasks:configure', { root })
+  },
+
   git: {
     status: (cwd: string) => ipcRenderer.invoke('git:status', { cwd }),
     init: (cwd: string) => ipcRenderer.invoke('git:init', { cwd }),
