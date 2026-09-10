@@ -9,7 +9,7 @@ import { initEditor, getEditor, openPath, openUntitled, saveActive, saveAll, clo
 import { initExplorer, openFolder, refresh as refreshExplorer, collapseAll, createFileFlow, createFolderFlow, walkForQuickOpen } from './features/explorer'
 import { initSearch, focusSearch } from './features/search'
 import { initSettingsPanel, focusSettings } from './features/settingsPanel'
-import { initTerminal, togglePanel, runInTerminal } from './features/terminal'
+import { initTerminal, togglePanel, toggleTerminal, runInTerminal } from './features/terminal'
 import { initStatusbar } from './features/statusbar'
 import { initTitlebar } from './features/titlebar'
 import { initContextMenu } from './features/contextmenu'
@@ -25,6 +25,7 @@ import { initGit } from './features/git'
 import { initProblems } from './features/problems'
 import { initLocalHistory, showLocalHistory } from './features/localHistory'
 import { runTask, rerunLastTask, configureTasks } from './features/tasks'
+import { openKeymapEditor } from './features/keymapEditor'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -83,7 +84,8 @@ function registerAllCommands(): void {
     { id: 'view.zoomOut', title: 'Zoom Out', category: 'View', run: () => zoom(-1) },
     { id: 'view.zoomReset', title: 'Reset Zoom', category: 'View', run: () => zoom(0, true) },
 
-    { id: 'terminal.toggle', title: 'Toggle Terminal', category: 'Terminal', run: () => togglePanel() },
+    { id: 'terminal.toggle', title: 'Toggle Terminal', category: 'Terminal', run: () => toggleTerminal() },
+    { id: 'panel.toggle', title: 'Toggle Panel', category: 'View', run: () => togglePanel() },
     { id: 'terminal.new', title: 'New Terminal', category: 'Terminal', run: () => bus.emit('terminal:new') },
     { id: 'terminal.runCommand', title: 'Run Command…', category: 'Terminal', run: runCommandPrompt },
     { id: 'terminal.here', title: 'Open Terminal at Selected Folder', category: 'Terminal', run: () => bus.emit('terminal:new-here') },
@@ -107,7 +109,8 @@ function registerAllCommands(): void {
     { id: 'tasks.rerun', title: 'Rerun Last Task', category: 'Tasks', run: rerunLastTask },
     { id: 'tasks.configure', title: 'Configure Tasks', category: 'Tasks', run: configureTasks },
 
-    { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', run: showShortcuts },
+    { id: 'help.shortcuts', title: 'Keyboard Shortcuts', category: 'Help', keybinding: 'Ctrl+K Ctrl+S', run: openKeymapEditor },
+    { id: 'keybindings.open', title: 'Open Keyboard Shortcuts', category: 'Preferences', run: openKeymapEditor },
     { id: 'help.checkUpdates', title: 'Check for Updates', category: 'Help', run: checkForUpdatesNow },
     { id: 'help.about', title: 'About Xcode', category: 'Help', run: showAbout }
   ])
@@ -219,34 +222,6 @@ function zoom(delta: number, reset = false): void {
   store.updateSettings({ zoom: z })
 }
 
-function showShortcuts(): void {
-  const rows: [string, string][] = [
-    ['Ctrl+P', 'Go to file'],
-    ['Ctrl+Shift+P', 'Command palette'],
-    ['Ctrl+S / Ctrl+Shift+S', 'Save / Save As'],
-    ['Ctrl+N', 'New file'],
-    ['Ctrl+O', 'Open file'],
-    ['Ctrl+W', 'Close editor'],
-    ['Ctrl+B', 'Toggle sidebar'],
-    ['Ctrl+`', 'Toggle terminal'],
-    ['Ctrl+Shift+E / F', 'Explorer / Search'],
-    ['Ctrl+, ', 'Settings'],
-    ['Ctrl+K Ctrl+T', 'Color theme'],
-    ['Ctrl+= / Ctrl+- / Ctrl+0', 'Zoom in / out / reset'],
-    ['Ctrl+F / Ctrl+H', 'Find / Replace'],
-    ['Ctrl+/', 'Toggle comment'],
-    ['Alt+↑ / Alt+↓', 'Move line'],
-    ['Shift+Alt+F', 'Format document'],
-    ['F11', 'Toggle full window']
-  ]
-  modal(
-    'Keyboard Shortcuts',
-    `<table class="kbd-table">${rows
-      .map(([k, d]) => `<tr><td><kbd>${k.replace(/ \/ /g, '</kbd> / <kbd>')}</kbd></td><td>${d}</td></tr>`)
-      .join('')}</table>`
-  )
-}
-
 async function showAbout(): Promise<void> {
   const info = await window.xcode.app.info()
   modal(
@@ -336,13 +311,16 @@ function wireChrome(): void {
     document.querySelectorAll<HTMLElement>('.panel-view').forEach((v) => {
       v.hidden = v.dataset.panel !== name
     })
+    if (name === 'terminal') bus.emit('terminal:ensure')
   }
   document.querySelectorAll<HTMLButtonElement>('.panel-tab[data-panel]').forEach((b) => {
     b.addEventListener('click', () => showPanelTab(b.dataset.panel!))
   })
+  // just switch the visible panel tab (no open/close)
+  bus.on('panel:tab', (name: string) => showPanelTab(name))
+  // open the panel if hidden, then switch to `name`
   bus.on('panel:show', (name: string) => {
-    const panel = document.getElementById('panel')!
-    if (panel.hidden) bus.emit('command:run', 'terminal.toggle')
+    if (document.getElementById('panel')!.hidden) togglePanel(true)
     showPanelTab(name)
   })
 

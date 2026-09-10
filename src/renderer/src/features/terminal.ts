@@ -73,6 +73,16 @@ export async function initTerminal(): Promise<void> {
   $select().addEventListener('change', () => selectSession(Number($select().value)))
 
   bus.on('terminal:new', () => void createSession())
+  bus.on('terminal:ensure', () => {
+    if (!sessions.size) void createSession()
+    else {
+      const s = activeId != null ? sessions.get(activeId) : null
+      if (s) {
+        fit(s)
+        s.term.focus()
+      }
+    }
+  })
   bus.on('terminal:new-here', async () => {
     const sel = currentSelection()
     let dir = store.rootPath || undefined
@@ -107,6 +117,7 @@ export async function initTerminal(): Promise<void> {
   setupResizer()
 }
 
+/** Low-level: just show/hide the bottom panel. */
 export function togglePanel(force?: boolean): void {
   const panel = $panel()
   const show = force ?? panel.hidden
@@ -114,17 +125,27 @@ export function togglePanel(force?: boolean): void {
   $resizer().hidden = !show
   if (show) {
     panel.style.height = store.settings.panelHeight + 'px'
-    if (!sessions.size) void createSession()
-    else {
-      const s = activeId != null ? sessions.get(activeId) : null
-      if (s) {
-        fit(s)
-        s.term.focus()
-      }
+    const s = activeId != null ? sessions.get(activeId) : null
+    if (s) {
+      fit(s)
+      s.term.focus()
     }
   }
   bus.emit(Ev.layoutChanged)
   document.getElementById('editor-host') && setTimeout(() => bus.emit('editor:relayout'), 0)
+}
+
+/** Ctrl+` / Ctrl+J: reveal the terminal, or hide the panel if it's already showing it. */
+export function toggleTerminal(): void {
+  const panel = $panel()
+  const onTerminal =
+    (document.querySelector('.panel-tab.active') as HTMLElement)?.dataset.panel === 'terminal'
+  if (!panel.hidden && onTerminal) {
+    togglePanel(false)
+    return
+  }
+  togglePanel(true)
+  bus.emit('panel:tab', 'terminal') // switches tab + ensures a session
 }
 
 export function panelVisible(): boolean {

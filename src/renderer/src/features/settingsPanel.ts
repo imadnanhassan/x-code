@@ -110,6 +110,11 @@ function build(): void {
   $panel().innerHTML =
     html +
     `<div class="settings-group">
+       <h3>Shortcuts</h3>
+       <button class="btn" id="settings-open-keys">Open Keyboard Shortcuts</button>
+       <div class="settings-note">Every command's key binding — click one to remap it.</div>
+     </div>
+     <div class="settings-group">
        <h3>Migrate</h3>
        <button class="btn" id="settings-import-vscode">Import VS Code Settings</button>
        <div class="settings-note">Reads your VS Code <code>settings.json</code> (font, theme, tabs, format-on-save, …) and maps it across.</div>
@@ -146,6 +151,11 @@ function build(): void {
     const { importVSCodeSettings } = await import('./vscodeImport')
     await importVSCodeSettings()
     sync()
+  })
+
+  $panel().querySelector('#settings-open-keys')!.addEventListener('click', async () => {
+    const { openKeymapEditor } = await import('./keymapEditor')
+    openKeymapEditor()
   })
 
   sync()

@@ -28,6 +28,7 @@ export interface Settings {
   hardwareAcceleration: boolean
   showMemoryUsage: boolean
   autoCheckUpdates: boolean
+  keybindings: Record<string, string>
   sidebarWidth: number
   panelHeight: number
   zoom: number
@@ -61,6 +62,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hardwareAcceleration: true,
   showMemoryUsage: false,
   autoCheckUpdates: true,
+  keybindings: {},
   sidebarWidth: 260,
   panelHeight: 240,
   zoom: 0

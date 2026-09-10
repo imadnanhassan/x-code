@@ -65,6 +65,7 @@ const MENUS: TopMenu[] = [
       { sep: true },
       { label: 'Color Theme…', hint: 'Ctrl+K Ctrl+T', run: cmd('theme.pick') },
       { label: 'Settings', hint: 'Ctrl+,', run: cmd('view.settings') },
+      { label: 'Keyboard Shortcuts', hint: 'Ctrl+K Ctrl+S', run: cmd('keybindings.open') },
       { sep: true },
       { label: 'Zoom In', hint: 'Ctrl+=', run: cmd('view.zoomIn') },
       { label: 'Zoom Out', hint: 'Ctrl+-', run: cmd('view.zoomOut') },
