@@ -19,6 +19,13 @@ release, you just cut a new tag.
 
 Pick whichever matches your setup — all serve a plain static folder:
 
+### Vercel
+1. [vercel.com/new](https://vercel.com/new) → Import Git Repository → pick `imadnanhassan/x-code`.
+2. Framework Preset: **Other**. Root Directory: click Edit → select **`site`**.
+3. Build Command / Output Directory: leave both blank (it's static — nothing to build).
+4. Deploy. Then Project → Settings → Domains → add `xcode.datadropx.net` and follow Vercel's DNS instructions (it'll give you a CNAME or A record to add wherever `datadropx.net`'s DNS is managed).
+5. Every future push to `main` redeploys automatically — no CI step needed for the site itself.
+
 ### Cloudflare Pages
 1. Push this repo to GitHub (already done).
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → connect the repo.
