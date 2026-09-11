@@ -132,7 +132,7 @@ nav.site-nav .wrap { display: flex; align-items: center; justify-content: space-
 .subnav a.on { background: var(--ink); color: #fff; }
 
 /* ---------- page hero (Features / Download / Support) ---------- */
-.page-hero { text-align: center; padding: 84px 0 56px; position: relative; }
+.page-hero { text-align: center; padding: 84px 0 56px; position: relative; overflow-x: hidden; }
 .page-hero::before {
   content: ""; position: absolute; left: 50%; top: -80px; width: 900px; height: 460px;
   transform: translateX(-50%);
@@ -148,7 +148,7 @@ nav.site-nav .wrap { display: flex; align-items: center; justify-content: space-
 .page-hero .lede { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 52ch; margin: 0 auto; }
 
 /* ---------- hero (home) ---------- */
-header.hero { text-align: center; padding: 78px 0 0; position: relative; }
+header.hero { text-align: center; padding: 78px 0 0; position: relative; overflow-x: hidden; }
 header.hero::before {
   content: ""; position: absolute; left: 50%; top: -60px; width: 900px; height: 520px;
   transform: translateX(-50%);
