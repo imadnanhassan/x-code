@@ -38,6 +38,7 @@ import { initSpellCheck } from './features/spellCheck'
 import { initLivePreview, toggleLivePreview, previewCurrentFile } from './features/livePreview'
 import { initApiClient, newRequestFile } from './features/apiClient'
 import { initApiPanel } from './features/apiPanel'
+import { initProjectModels } from './features/projectModels'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -54,6 +55,7 @@ async function boot(): Promise<void> {
   initProblems()
   initLocalHistory()
   initLanguageExtras()
+  initProjectModels()
   initErrorLens()
   initEnvMask()
   initDiffView()
