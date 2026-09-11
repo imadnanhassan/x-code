@@ -77,7 +77,7 @@ export const DEFAULT_SETTINGS: Settings = {
   trimTrailingWhitespace: false,
   insertFinalNewline: false,
   trimFinalNewlines: false,
-  hardwareAcceleration: true,
+  hardwareAcceleration: false,
   showMemoryUsage: false,
   autoCheckUpdates: true,
   keybindings: {},
