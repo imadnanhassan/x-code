@@ -177,6 +177,81 @@ const THEMES: Theme[] = [
       func: '#d2a8ff', entity: '#ffa657', variable: '#ffa657', constant: '#79c0ff',
       operator: '#ff7b72', tag: '#7ee787', attribute: '#79c0ff', regexp: '#7ee787'
     }
+  },
+  {
+    id: 'gruvbox-dark',
+    name: 'Gruvbox Dark',
+    palette: {
+      type: 'dark',
+      bg: '#282828', bgAlt: '#1d2021', bgElevated: '#3c3836', bgInput: '#1d2021',
+      fg: '#ebdbb2', fgMuted: '#d5c4a1', fgFaint: '#928374',
+      border: '#504945', accent: '#fe8019', accentFg: '#282828',
+      selection: '#504945', lineHighlight: '#32302f', scrollbar: '#665c54',
+      error: '#fb4934', warn: '#fabd2f', info: '#83a598', ok: '#b8bb26',
+      comment: '#928374', string: '#b8bb26', keyword: '#fb4934', number: '#d3869b',
+      func: '#b8bb26', entity: '#fabd2f', variable: '#ebdbb2', constant: '#d3869b',
+      operator: '#fe8019', tag: '#fb4934', attribute: '#fabd2f', regexp: '#fe8019'
+    }
+  },
+  {
+    id: 'ayu-dark',
+    name: 'Ayu Dark',
+    palette: {
+      type: 'dark',
+      bg: '#0a0e14', bgAlt: '#060a0f', bgElevated: '#0d1017', bgInput: '#060a0f',
+      fg: '#b3b1ad', fgMuted: '#8a8986', fgFaint: '#4d5566',
+      border: '#1b222d', accent: '#e6b450', accentFg: '#0a0e14',
+      selection: '#253340', lineHighlight: '#131721', scrollbar: '#2d3640',
+      error: '#ff3333', warn: '#ffb454', info: '#59c2ff', ok: '#aad94c',
+      comment: '#626a73', string: '#aad94c', keyword: '#ff8f40', number: '#d2a6ff',
+      func: '#ffb454', entity: '#59c2ff', variable: '#b3b1ad', constant: '#d2a6ff',
+      operator: '#f29668', tag: '#39bae6', attribute: '#ffb454', regexp: '#95e6cb'
+    }
+  },
+  {
+    id: 'rose-pine',
+    name: 'Rosé Pine',
+    palette: {
+      type: 'dark',
+      bg: '#191724', bgAlt: '#1f1d2e', bgElevated: '#26233a', bgInput: '#1f1d2e',
+      fg: '#e0def4', fgMuted: '#908caa', fgFaint: '#6e6a86',
+      border: '#403d52', accent: '#c4a7e7', accentFg: '#191724',
+      selection: '#403d52', lineHighlight: '#21202e', scrollbar: '#524f67',
+      error: '#eb6f92', warn: '#f6c177', info: '#9ccfd8', ok: '#31748f',
+      comment: '#6e6a86', string: '#f6c177', keyword: '#c4a7e7', number: '#ebbcba',
+      func: '#9ccfd8', entity: '#ebbcba', variable: '#e0def4', constant: '#ebbcba',
+      operator: '#31748f', tag: '#eb6f92', attribute: '#f6c177', regexp: '#ebbcba'
+    }
+  },
+  {
+    id: 'night-owl',
+    name: 'Night Owl',
+    palette: {
+      type: 'dark',
+      bg: '#011627', bgAlt: '#010e1a', bgElevated: '#0b2942', bgInput: '#010e1a',
+      fg: '#d6deeb', fgMuted: '#a1aab7', fgFaint: '#5f7e97',
+      border: '#1d3b53', accent: '#82aaff', accentFg: '#011627',
+      selection: '#1d3b53', lineHighlight: '#0e293f', scrollbar: '#234662',
+      error: '#ef5350', warn: '#addb67', info: '#82aaff', ok: '#21c7a8',
+      comment: '#637777', string: '#ecc48d', keyword: '#c792ea', number: '#f78c6c',
+      func: '#82aaff', entity: '#ffcb8b', variable: '#d6deeb', constant: '#f78c6c',
+      operator: '#c792ea', tag: '#7fdbca', attribute: '#addb67', regexp: '#5ca7e4'
+    }
+  },
+  {
+    id: 'catppuccin-latte',
+    name: 'Catppuccin Latte',
+    palette: {
+      type: 'light',
+      bg: '#eff1f5', bgAlt: '#e6e9ef', bgElevated: '#ccd0da', bgInput: '#ffffff',
+      fg: '#4c4f69', fgMuted: '#6c6f85', fgFaint: '#8c8fa1',
+      border: '#ccd0da', accent: '#1e66f5', accentFg: '#eff1f5',
+      selection: '#acb0be', lineHighlight: '#e6e9ef', scrollbar: '#bcc0cc',
+      error: '#d20f39', warn: '#df8e1d', info: '#1e66f5', ok: '#40a02b',
+      comment: '#8c8fa1', string: '#40a02b', keyword: '#8839ef', number: '#fe640b',
+      func: '#1e66f5', entity: '#df8e1d', variable: '#4c4f69', constant: '#fe640b',
+      operator: '#04a5e5', tag: '#d20f39', attribute: '#df8e1d', regexp: '#ea76cb'
+    }
   }
 ]
 

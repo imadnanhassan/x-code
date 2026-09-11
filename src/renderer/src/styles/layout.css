@@ -430,3 +430,18 @@ body.resizing .resizer-h {
   background: var(--line-highlight);
   color: var(--fg);
 }
+
+/* ---------- glass effect (Settings -> Appearance -> Glass Effect) ---------- */
+/* Frosts the persistent chrome bars with a translucent, blurred surface instead
+   of a flat opaque one. Off by default: backdrop-filter costs extra GPU/compositor
+   work, which cuts against this app's low-RAM-first design — it's an opt-in look. */
+:root[data-ui-glass='1'] #titlebar,
+:root[data-ui-glass='1'] #activitybar,
+:root[data-ui-glass='1'] #sidebar,
+:root[data-ui-glass='1'] #panel,
+:root[data-ui-glass='1'] #statusbar,
+:root[data-ui-glass='1'] #update-banner {
+  background: color-mix(in srgb, var(--bg-alt) 68%, transparent);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}

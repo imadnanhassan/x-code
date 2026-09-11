@@ -5,6 +5,19 @@ import { toast } from './toast'
 let built = false
 const $panel = () => document.getElementById('settings-panel')!
 
+const CUSTOM_FONT = '__custom__'
+const FONT_PRESETS = [
+  { value: "'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace", label: 'JetBrains Mono' },
+  { value: "'Fira Code', 'JetBrains Mono', Consolas, 'Courier New', monospace", label: 'Fira Code' },
+  { value: "'Cascadia Code', 'Cascadia Mono', Consolas, 'Courier New', monospace", label: 'Cascadia Code' },
+  { value: "'Source Code Pro', Consolas, 'Courier New', monospace", label: 'Source Code Pro' },
+  { value: "'IBM Plex Mono', Consolas, 'Courier New', monospace", label: 'IBM Plex Mono' },
+  { value: "'Space Mono', Consolas, 'Courier New', monospace", label: 'Space Mono' },
+  { value: "'Roboto Mono', Consolas, 'Courier New', monospace", label: 'Roboto Mono' },
+  { value: "Consolas, 'Courier New', monospace", label: 'Consolas (Windows default)' },
+  { value: 'ui-monospace, Consolas, "Courier New", monospace', label: 'System Monospace' }
+]
+
 type FieldType = 'select' | 'number' | 'text' | 'toggle'
 interface Field {
   key: keyof Settings
@@ -20,10 +33,15 @@ interface Field {
 
 const FIELDS: Field[] = [
   { key: 'theme', label: 'Color Theme', type: 'select', group: 'Appearance', options: allThemes().map((t) => ({ value: t.id, label: t.name })) },
-  { key: 'fontFamily', label: 'Font Family', type: 'text', group: 'Appearance' },
+  {
+    key: 'fontFamily', label: 'Font Family', type: 'select', group: 'Appearance',
+    options: [...FONT_PRESETS, { value: CUSTOM_FONT, label: 'Custom…' }],
+    note: 'Only renders if that font is actually installed on your system — these ship as name references, not bundled font files. Falls back to a system monospace font otherwise.'
+  },
   { key: 'fontSize', label: 'Font Size', type: 'number', min: 8, max: 40, step: 1, group: 'Appearance' },
   { key: 'lineHeight', label: 'Line Height (×)', type: 'number', min: 1, max: 3, step: 0.05, group: 'Appearance' },
   { key: 'fontLigatures', label: 'Font Ligatures', type: 'toggle', group: 'Appearance' },
+  { key: 'uiGlass', label: 'Glass Effect', type: 'toggle', group: 'Appearance', note: 'Translucent, frosted panels and menus. Uses backdrop-filter, which costs a bit more GPU — off by default to keep RAM/GPU usage minimal.' },
   { key: 'minimap', label: 'Minimap', type: 'toggle', group: 'Appearance' },
   { key: 'stickyScroll', label: 'Sticky Scroll', type: 'toggle', group: 'Appearance' },
   {
@@ -141,11 +159,26 @@ function build(): void {
         if (field.type === 'toggle') value = (el as HTMLInputElement).checked
         else if (field.type === 'number') value = Number((el as HTMLInputElement).value)
         else value = (el as HTMLInputElement).value
+        if (key === 'fontFamily' && value === CUSTOM_FONT) {
+          const row = $panel().querySelector<HTMLElement>('#set-fontFamily-custom-row')!
+          row.style.display = ''
+          const input = $panel().querySelector<HTMLInputElement>('#set-fontFamily-custom')!
+          input.value = store.settings.fontFamily
+          input.focus()
+          return
+        }
         store.updateSettings({ [key]: value } as Partial<Settings>)
         if (key === 'theme') applyTheme(value)
+        if (key === 'fontFamily') $panel().querySelector<HTMLElement>('#set-fontFamily-custom-row')!.style.display = 'none'
         if (key === 'hardwareAcceleration') toast('Restart Xcode to apply this change', 'info')
       }
       el.addEventListener(field.type === 'text' ? 'change' : 'input', handler)
+    })
+
+  $panel()
+    .querySelector<HTMLInputElement>('#set-fontFamily-custom')!
+    .addEventListener('change', (e) => {
+      store.updateSettings({ fontFamily: (e.target as HTMLInputElement).value })
     })
 
   $panel().querySelector('#settings-reset')!.addEventListener('click', () => {
@@ -184,7 +217,11 @@ function fieldHtml(f: Field): string {
     control = `<input type="text" id="${id}" data-key="${f.key}" spellcheck="false">`
   }
   const note = f.note ? `<div class="settings-note">${f.note}</div>` : ''
-  return `<div class="settings-row"><label for="${id}">${f.label}</label>${control}</div>${note}`
+  const extra =
+    f.key === 'fontFamily'
+      ? `<div class="settings-row" id="set-fontFamily-custom-row" style="display:none"><label for="set-fontFamily-custom">Custom Font Family</label><input type="text" id="set-fontFamily-custom" spellcheck="false"></div>`
+      : ''
+  return `<div class="settings-row"><label for="${id}">${f.label}</label>${control}</div>${note}${extra}`
 }
 
 function sync(): void {
@@ -195,4 +232,13 @@ function sync(): void {
     if (f.type === 'toggle') el.checked = !!val
     else el.value = String(val)
   })
+
+  const current = store.settings.fontFamily
+  const isPreset = FONT_PRESETS.some((p) => p.value === current)
+  const select = $panel().querySelector<HTMLSelectElement>('[data-key="fontFamily"]')!
+  const row = $panel().querySelector<HTMLElement>('#set-fontFamily-custom-row')!
+  const input = $panel().querySelector<HTMLInputElement>('#set-fontFamily-custom')!
+  select.value = isPreset ? current : CUSTOM_FONT
+  row.style.display = isPreset ? 'none' : ''
+  if (!isPreset) input.value = current
 }

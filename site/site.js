@@ -140,6 +140,44 @@
     targetEl.innerHTML = html
   }
 
+  // ---- total download count across every release ----
+  // GitHub tracks a download_count per release asset already, so this needs no
+  // backend of its own — just sum the .exe assets (skip latest.yml / .blockmap,
+  // which the auto-updater fetches on every launch and would inflate the number
+  // with update-checks rather than actual installs).
+  window.XCODE_fetchTotalDownloads = function () {
+    return fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=100', {
+      headers: { Accept: 'application/vnd.github+json' }
+    })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status) })
+      .then(function (releases) {
+        var total = 0
+        releases.forEach(function (rel) {
+          ;(rel.assets || []).forEach(function (a) {
+            if (/\.exe$/i.test(a.name)) total += a.download_count || 0
+          })
+        })
+        return total
+      })
+  }
+
+  // auto-run on any page that has a download-count element
+  if (document.querySelector('[data-dl-count]')) {
+    window.XCODE_fetchTotalDownloads()
+      .then(function (total) {
+        if (!total) return
+        document.querySelectorAll('[data-dl-count]').forEach(function (el) {
+          el.textContent = total.toLocaleString()
+          var line = el.closest('[data-dl-count-line]')
+          if (line) line.style.display = ''
+        })
+      })
+      .catch(function () {
+        // stay hidden — no backend to fall back on, so silently skip rather
+        // than show a broken "0 downloads"
+      })
+  }
+
   // auto-run on any page that has download-aware elements
   if (document.querySelector('[data-dl-win], [data-dl-smart], [data-dl-version], [data-dl-notes]')) {
     window.XCODE_fetchLatestRelease()

@@ -41,6 +41,7 @@ export interface Settings {
   sidebarWidth: number
   panelHeight: number
   zoom: number
+  uiGlass: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -83,7 +84,8 @@ export const DEFAULT_SETTINGS: Settings = {
   keybindings: {},
   sidebarWidth: 260,
   panelHeight: 240,
-  zoom: 0
+  zoom: 0,
+  uiGlass: false
 }
 
 export interface RecentFolder {

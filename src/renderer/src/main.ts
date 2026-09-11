@@ -405,18 +405,24 @@ function wireBusBridges(): void {
   })
   bus.on('terminal:run', (cmd: string) => runInTerminal(cmd))
   bus.on(Ev.settingsChanged, () => applyZoomVar())
+  bus.on(Ev.settingsChanged, () => applyGlassVar())
   bus.on(Ev.themeChanged, () => {
     const sb = document.getElementById('sb-theme')
     if (sb) sb.setAttribute('title', 'Color Theme — ' + store.settings.theme)
   })
   bus.on(Ev.workspaceOpened, () => renderRecent())
   applyZoomVar()
+  applyGlassVar()
 }
 
 function applyZoomVar(): void {
   document.documentElement.style.setProperty('--zoom-delta', String(store.settings.zoom))
   const base = 13 + store.settings.zoom
   document.documentElement.style.setProperty('--ui-font-size', Math.max(10, base - 1) + 'px')
+}
+
+function applyGlassVar(): void {
+  document.documentElement.dataset.uiGlass = store.settings.uiGlass ? '1' : '0'
 }
 
 /* ---------------- restore ---------------- */
