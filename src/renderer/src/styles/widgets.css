@@ -1270,15 +1270,19 @@
 }
 .act-badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 4px;
+  right: 8px;
   min-width: 15px;
   height: 15px;
   padding: 0 3px;
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--accent);
+  /* A ring matching the activity bar's own background "cuts" the badge out
+     from the icon sitting behind it, instead of the two visually merging. */
+  box-shadow: 0 0 0 2px var(--bg-alt);
   color: var(--accent-fg);
   font-size: 9px;
+  line-height: 1;
   font-weight: 700;
   display: grid;
   place-items: center;
