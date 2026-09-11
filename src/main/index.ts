@@ -147,7 +147,9 @@ function setupAutoUpdate(): void {
     const benign = /app-update\.yml|Unable to find latest version|HttpError: 40[46]|ENOTFOUND|ETIMEDOUT/i
     if (!benign.test(msg)) console.error('[xcode] auto-update:', msg)
   })
-  ipcMain.on('update:install', () => autoUpdater.quitAndInstall())
+  // isSilent=true: NSIS installs the update with the /S flag (no wizard/clicks),
+  // even though the initial install stays "assisted" for folder choice.
+  ipcMain.on('update:install', () => autoUpdater.quitAndInstall(true, true))
   ipcMain.handle('update:check', async () => {
     try {
       const r = await autoUpdater.checkForUpdates()
