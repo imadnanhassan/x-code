@@ -553,7 +553,12 @@
   letter-spacing: 1px;
 }
 .welcome-inner h1 .wm-x {
-  color: var(--accent);
+  /* Brand orange, not the theme accent — the wordmark should read the same
+     across all themes, the same way the taskbar/logo badge always does. */
+  background: linear-gradient(140deg, #ff6a3d, #e8401a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-weight: 700;
 }
 .welcome-inner .tag {

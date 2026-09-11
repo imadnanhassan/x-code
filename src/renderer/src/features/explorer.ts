@@ -30,6 +30,13 @@ export function initExplorer(): void {
   bus.on('explorer:reveal', (p: string) => revealPath(p))
   bus.on(Ev.workspaceOpened, () => renderRoot())
   bus.on('explorer:refresh', () => refresh())
+  let lastIconTheme = store.settings.iconTheme
+  bus.on(Ev.settingsChanged, () => {
+    if (store.settings.iconTheme !== lastIconTheme) {
+      lastIconTheme = store.settings.iconTheme
+      void refresh()
+    }
+  })
   bus.on('git:decorations', (m: Map<string, { i: string; w: string }>) => {
     gitDeco = m
     applyGitDeco()

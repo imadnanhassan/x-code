@@ -89,8 +89,13 @@ function applySaveCleanups(model: monaco.editor.ITextModel): void {
 export function initEditor(): void {
   configureLanguages()
 
+  let lastIconTheme = store.settings.iconTheme
   bus.on(Ev.settingsChanged, () => {
     if (editorCreated) editor.updateOptions(editorOptions())
+    if (store.settings.iconTheme !== lastIconTheme) {
+      lastIconTheme = store.settings.iconTheme
+      renderTabs()
+    }
   })
   window.addEventListener('blur', () => {
     if (store.settings.autoSave === 'onFocusChange') void saveAll(true)

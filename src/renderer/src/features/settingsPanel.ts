@@ -34,6 +34,13 @@ interface Field {
 const FIELDS: Field[] = [
   { key: 'theme', label: 'Color Theme', type: 'select', group: 'Appearance', options: allThemes().map((t) => ({ value: t.id, label: t.name })) },
   {
+    key: 'iconTheme', label: 'Icon Theme', type: 'select', group: 'Appearance',
+    options: [
+      { value: 'colorful', label: 'Colorful (per language)' },
+      { value: 'mono', label: 'Monochrome' }
+    ]
+  },
+  {
     key: 'fontFamily', label: 'Font Family', type: 'select', group: 'Appearance',
     options: [...FONT_PRESETS, { value: CUSTOM_FONT, label: 'Custom…' }],
     note: 'Only renders if that font is actually installed on your system — these ship as name references, not bundled font files. Falls back to a system monospace font otherwise.'

@@ -2,6 +2,7 @@ import { bus, Ev } from './bus'
 
 export interface Settings {
   theme: string
+  iconTheme: 'colorful' | 'mono'
   fontFamily: string
   fontSize: number
   lineHeight: number
@@ -46,6 +47,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'xcode-dark',
+  iconTheme: 'colorful',
   fontFamily: "'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace",
   fontSize: 13,
   lineHeight: 1.6,

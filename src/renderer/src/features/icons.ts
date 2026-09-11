@@ -1,7 +1,11 @@
 /**
- * Colourful file/folder icons rendered as inline SVG strings — inspired by the
- * reference screenshot's tinted, language-coloured tree.
+ * File/folder icons rendered as inline SVG strings — inspired by the reference
+ * screenshot's tinted, language-coloured tree. Settings -> Appearance -> Icon
+ * Theme switches between this full colour set and a monochrome outline style
+ * that just uses the surrounding text colour (currentColor), same idea as an
+ * editor's file-icon-theme picker.
  */
+import { store } from '../core/store'
 
 interface LangIcon {
   color: string
@@ -192,13 +196,19 @@ function folderSvg(color: string, open: boolean): string {
   </svg>`
 }
 
+function isMono(): boolean {
+  return store.settings.iconTheme === 'mono'
+}
+
 export function folderIcon(name: string, open: boolean): string {
+  if (isMono()) return folderSvg('currentColor', open)
   const key = name.toLowerCase()
   const color = FOLDER_COLORS[key] || (open ? OPEN_FOLDER : DEFAULT_FOLDER)
   return folderSvg(color, open)
 }
 
 export function fileIcon(name: string): string {
+  if (isMono()) return docSvg('currentColor', '')
   const lower = name.toLowerCase()
   if (FILENAME_MAP[lower]) {
     const f = FILENAME_MAP[lower]
