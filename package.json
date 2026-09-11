@@ -1,7 +1,7 @@
 {
   "name": "xcode-editor",
   "productName": "Xcode",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Xcode — a fast, lightweight personal code editor",
   "main": "./out/main/index.js",
   "author": "masudranadev51",
