@@ -11,7 +11,10 @@ import {
   getActiveEnvName,
   setActiveEnvironment,
   ensureEnvFile,
-  type Req
+  defaultCollectionPath,
+  appendRequestToCollection,
+  type Req,
+  type NewReq
 } from './apiClient'
 
 interface ApiHistoryEntry {
@@ -38,7 +41,8 @@ export function initApiPanel(): void {
   $head().innerHTML =
     `<span class="side-title">API CLIENT</span>` +
     `<div class="side-actions">` +
-    `<button data-a="new" title="New Request File">&#xE7C3;</button>` +
+    `<button data-a="newReq" title="New Request">&#xE710;</button>` +
+    `<button data-a="newFile" title="New Request File (.http)">&#xE7C3;</button>` +
     `<button data-a="refresh" title="Refresh">&#xE72C;</button>` +
     `</div>`
   $head().querySelectorAll<HTMLButtonElement>('button[data-a]').forEach((b) => {
@@ -77,7 +81,8 @@ function syncTabs(): void {
 }
 
 function onHeadAction(a: string): void {
-  if (a === 'new') void newRequestFile()
+  if (a === 'newReq') openNewRequestModal()
+  if (a === 'newFile') void newRequestFile()
   if (a === 'refresh') void render()
 }
 
@@ -99,14 +104,6 @@ async function renderCollections(): Promise<void> {
 
   const all = await walkForQuickOpen()
   const files = all.filter((f) => /\.(http|rest)$/i.test(f))
-  if (!files.length) {
-    body.innerHTML =
-      `<div class="empty-hint"><p>No <code>.http</code> or <code>.rest</code> files yet.</p>` +
-      `<button class="btn-primary" id="api-new-file">New Request File</button></div>`
-    body.querySelector('#api-new-file')!.addEventListener('click', () => void newRequestFile())
-    return
-  }
-
   const groups = await Promise.all(
     files.map(async (file) => {
       try {
@@ -118,10 +115,21 @@ async function renderCollections(): Promise<void> {
     })
   )
 
+  const projectName = store.rootPath.split(/[\\/]/).filter(Boolean).pop() || 'Project'
+  const defaultFile = defaultCollectionPath()
+
   body.innerHTML = ''
+  const addBtn = document.createElement('button')
+  addBtn.className = 'btn-primary api-add-btn'
+  addBtn.textContent = '+ New Request'
+  addBtn.addEventListener('click', () => openNewRequestModal())
+  body.appendChild(addBtn)
+
+  let any = false
   for (const { file, reqs } of groups) {
     if (!reqs.length) continue
-    const name = file.split(/[\\/]/).pop() || file
+    any = true
+    const name = file === defaultFile ? projectName : file.split(/[\\/]/).pop() || file
     const group = document.createElement('div')
     group.className = 'api-group'
     group.innerHTML = `<div class="api-group-h"><span>${escapeHtml(name)}</span><span class="api-count">${reqs.length}</span></div>`
@@ -145,8 +153,11 @@ async function renderCollections(): Promise<void> {
     }
     body.appendChild(group)
   }
-  if (!body.children.length) {
-    body.innerHTML = `<div class="empty-hint"><p>Found <code>.http</code> files, but no requests parsed inside them.</p></div>`
+  if (!any) {
+    const hint = document.createElement('div')
+    hint.className = 'empty-hint'
+    hint.innerHTML = `<p>No requests yet for <b>${escapeHtml(projectName)}</b>. Click "+ New Request" above, or use the <code>.http</code> file directly.</p>`
+    body.appendChild(hint)
   }
 }
 
@@ -229,6 +240,90 @@ async function renderHistory(): Promise<void> {
     if (!window.confirm('Clear all API request history?')) return
     await window.xcode.apiHistory.clear()
     void render()
+  })
+}
+
+/* ---------------- new request form ---------------- */
+
+const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
+
+function openNewRequestModal(): void {
+  if (!store.rootPath) {
+    toast('Open a folder first', 'warn')
+    return
+  }
+  const overlay = document.createElement('div')
+  overlay.className = 'modal-overlay'
+  overlay.innerHTML = `
+    <div class="modal wide">
+      <div class="modal-title">New Request</div>
+      <div class="req-form">
+        <input class="modal-input req-name" type="text" placeholder="Request name (optional)" spellcheck="false">
+        <div class="req-line">
+          <select class="req-method">${METHODS.map((m) => `<option${m === 'GET' ? ' selected' : ''}>${m}</option>`).join('')}</select>
+          <input class="modal-input req-url" type="text" placeholder="https://api.example.com/users  or  {{baseUrl}}/users" spellcheck="false">
+        </div>
+        <div class="req-headers">
+          <div class="req-headers-h"><span>Headers</span><button type="button" class="btn ghost btn-sm req-add-header">+ Add Header</button></div>
+          <div class="req-headers-list"></div>
+        </div>
+        <textarea class="req-body" rows="7" placeholder="Request body (optional — e.g. JSON)" spellcheck="false"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" data-act="cancel">Cancel</button>
+        <button class="btn primary" data-act="save">Save Request</button>
+      </div>
+    </div>`
+  document.body.appendChild(overlay)
+
+  const headersList = overlay.querySelector('.req-headers-list')!
+  function addHeaderRow(k = '', v = ''): void {
+    const row = document.createElement('div')
+    row.className = 'req-header-row'
+    row.innerHTML =
+      `<input type="text" class="req-h-key" placeholder="Header" value="${escapeHtml(k)}" spellcheck="false">` +
+      `<input type="text" class="req-h-val" placeholder="Value" value="${escapeHtml(v)}" spellcheck="false">` +
+      `<button type="button" class="req-h-remove" title="Remove">&times;</button>`
+    row.querySelector('.req-h-remove')!.addEventListener('click', () => row.remove())
+    headersList.appendChild(row)
+  }
+  addHeaderRow('Content-Type', 'application/json')
+  overlay.querySelector('.req-add-header')!.addEventListener('click', () => addHeaderRow())
+
+  const urlInput = overlay.querySelector<HTMLInputElement>('.req-url')!
+  urlInput.focus()
+
+  const done = (): void => overlay.remove()
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) done() })
+  overlay.querySelector('[data-act="cancel"]')!.addEventListener('click', done)
+  overlay.addEventListener('keydown', (e) => { if (e.key === 'Escape') done() })
+
+  overlay.querySelector('[data-act="save"]')!.addEventListener('click', () => {
+    const url = urlInput.value.trim()
+    if (!url) {
+      toast('Enter a URL', 'warn')
+      urlInput.focus()
+      return
+    }
+    const method = (overlay.querySelector('.req-method') as HTMLSelectElement).value
+    const name = (overlay.querySelector('.req-name') as HTMLInputElement).value.trim()
+    const body = (overlay.querySelector('.req-body') as HTMLTextAreaElement).value
+    const headers: Record<string, string> = {}
+    overlay.querySelectorAll('.req-header-row').forEach((row) => {
+      const k = (row.querySelector('.req-h-key') as HTMLInputElement).value.trim()
+      const v = (row.querySelector('.req-h-val') as HTMLInputElement).value
+      if (k) headers[k] = v
+    })
+    void (async () => {
+      const file = await appendRequestToCollection({ name, method, url, headers, body })
+      done()
+      if (file) {
+        toast('Request saved', 'ok')
+        if (activeTab === 'collections') void render()
+      } else {
+        toast('Failed to save request', 'error')
+      }
+    })()
   })
 }
 

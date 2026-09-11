@@ -1649,6 +1649,80 @@
 .api-clear-history {
   margin: 10px 14px;
 }
+.api-add-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 10px 14px 14px;
+}
+
+/* ---------- new-request form (inside .modal.wide) ---------- */
+.req-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 2px;
+}
+.req-form .req-name,
+.req-form .req-url {
+  width: 100%;
+}
+.req-line {
+  display: flex;
+  gap: 8px;
+}
+.req-method {
+  flex-shrink: 0;
+  width: 110px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 700;
+  font-size: 12px;
+}
+.req-headers-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--fg-faint);
+  margin-bottom: 6px;
+}
+.req-headers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.req-header-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.req-header-row .req-h-key {
+  width: 40%;
+}
+.req-header-row .req-h-val {
+  flex: 1;
+}
+.req-h-remove {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--fg-faint);
+  font-size: 15px;
+}
+.req-h-remove:hover {
+  background: var(--line-highlight);
+  color: var(--error);
+}
+.req-body {
+  width: 100%;
+  resize: vertical;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+}
 
 /* ---------- glass effect: overlays ---------- */
 /* Unlike the chrome bars (layout.css), these sit above the editor with a real

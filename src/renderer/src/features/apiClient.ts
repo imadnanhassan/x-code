@@ -269,6 +269,43 @@ export async function setActiveEnvironment(name: string): Promise<void> {
   bus.emit('apiEnv:changed')
 }
 
+/** Path to the per-project default collection — grouped in the sidebar under the project's own name. */
+export function defaultCollectionPath(): string | null {
+  if (!store.rootPath) return null
+  return store.rootPath + (store.rootPath.includes('\\') ? '\\.xcode\\requests.http' : '/.xcode/requests.http')
+}
+
+export interface NewReq {
+  name: string
+  method: string
+  url: string
+  headers: Record<string, string>
+  body: string
+}
+
+/** Appends one request, formatted as a `.http` block, to the project's default collection file. */
+export async function appendRequestToCollection(req: NewReq): Promise<string | null> {
+  const file = defaultCollectionPath()
+  if (!file) return null
+  let existing = ''
+  try {
+    existing = await window.xcode.fs.read(file)
+  } catch {
+    /* new file */
+  }
+  const lines = [`### ${req.name || `${req.method} ${req.url}`}`, `${req.method} ${req.url}`]
+  for (const [k, v] of Object.entries(req.headers)) {
+    if (k.trim()) lines.push(`${k.trim()}: ${v}`)
+  }
+  if (req.body.trim()) {
+    lines.push('')
+    lines.push(req.body.trim())
+  }
+  const sep = existing.trim() ? '\n\n' : ''
+  await window.xcode.fs.write(file, existing.replace(/\s+$/, '') + sep + lines.join('\n') + '\n')
+  return file
+}
+
 export async function ensureEnvFile(): Promise<string | null> {
   const file = envFilePath()
   if (!file) return null

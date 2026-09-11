@@ -156,6 +156,10 @@ body.resizing .xterm {
 .btn.ghost:hover {
   background: var(--line-highlight);
 }
+.btn-sm {
+  padding: 3px 9px;
+  font-size: 11px;
+}
 .btn-primary {
   padding: 7px 16px;
   border-radius: 6px;
