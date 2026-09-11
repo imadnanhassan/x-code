@@ -95,7 +95,9 @@ nav.site-nav .wrap { display: flex; align-items: center; justify-content: space-
 }
 .brand:hover .logo { transform: translateY(-1px) scale(1.04); box-shadow: 0 10px 20px -8px rgba(232,64,26,.6), inset 0 1px 0 rgba(255,255,255,.3); }
 .brand b { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; }
-.brand span { color: var(--muted); font-size: 14px; margin-left: 2px; }
+/* :not(.logo) — the "</>" badge is also a <span> inside .brand, and without
+   this it would win on specificity over .logo's own color:#fff and turn grey. */
+.brand span:not(.logo) { color: var(--muted); font-size: 14px; margin-left: 2px; }
 .nav-links { display: flex; align-items: center; gap: 2px; font-size: 14.5px; color: var(--ink-2); }
 .nav-links a.nl {
   position: relative; padding: 8px 14px; border-radius: 999px;
