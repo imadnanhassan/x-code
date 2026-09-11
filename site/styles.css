@@ -25,7 +25,15 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%;
+  /* Reserve the scrollbar's width on every page, whether or not that page's
+     content is tall enough to need one — otherwise the whole centered layout
+     (nav included) shifts sideways by the scrollbar's width when navigating
+     between a tall page and a short one, reading as the header "jumping". */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
 body {
   font-family: var(--sans);
   background: var(--bg);
