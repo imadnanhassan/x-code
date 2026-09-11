@@ -123,8 +123,6 @@
   display: grid;
   place-items: center;
   border-radius: 4px;
-  font-family: var(--icon-font);
-  font-size: 10px;
   color: var(--fg-faint);
   flex-shrink: 0;
 }
@@ -132,20 +130,29 @@
   background: var(--selection);
   color: var(--fg);
 }
+/* Plain SVG, not an icon-font glyph — a missing/unmapped codepoint in the
+   Segoe icon-font stack rendered as a tofu box instead of an X on some
+   systems. SVG always renders correctly regardless of installed fonts. */
+.tab-close .x-ic {
+  display: block;
+}
 .tab-close .dot {
+  display: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--fg-muted);
 }
-.tab:hover .tab-close .dot {
+.tab.dirty .tab-close .x-ic {
   display: none;
 }
-.tab:hover .tab-close::after {
-  content: "\E8BB";
-  font-family: var(--icon-font);
-}
 .tab.dirty .tab-close .dot {
+  display: block;
+}
+.tab.dirty:hover .tab-close .dot {
+  display: none;
+}
+.tab.dirty:hover .tab-close .x-ic {
   display: block;
 }
 

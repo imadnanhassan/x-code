@@ -405,7 +405,10 @@ function renderTabs(): void {
     el.innerHTML =
       `<span class="tab-icon">${t.isUntitled ? docFallback() : fileIcon(t.title)}</span>` +
       `<span class="tab-label">${escapeHtml(t.title)}</span>` +
-      `<span class="tab-close" title="Close">${t.dirty ? '<span class="dot"></span>' : '&#xE8BB;'}</span>`
+      `<span class="tab-close" title="Close">` +
+      `<span class="dot"></span>` +
+      `<svg class="x-ic" viewBox="0 0 16 16" width="10" height="10" aria-hidden="true"><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M4 4l8 8m0-8l-8 8"/></svg>` +
+      `</span>`
     el.addEventListener('mousedown', (e) => {
       if ((e.target as HTMLElement).closest('.tab-close')) return
       if (e.button === 1) {
