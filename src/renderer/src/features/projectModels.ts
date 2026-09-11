@@ -50,6 +50,7 @@ async function preload(): Promise<void> {
     } catch {
       continue
     }
+    if (token !== runToken) return // a newer preload() reset the pool while this read was in flight
     bytes += text.length
     if (bytes > MAX_BYTES) break
 

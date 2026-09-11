@@ -32,6 +32,7 @@ type Tab = 'collections' | 'environments' | 'history'
 let activeTab: Tab = 'collections'
 let visible = false
 let refreshTimer: number | undefined
+let renderToken = 0
 
 const $view = () => document.querySelector('.side-view[data-view="api"]') as HTMLElement
 const $body = () => $view().querySelector('.api-tab-body') as HTMLElement
@@ -87,14 +88,21 @@ function onHeadAction(a: string): void {
 }
 
 async function render(): Promise<void> {
-  if (activeTab === 'collections') return renderCollections()
-  if (activeTab === 'environments') return renderEnvironments()
-  return renderHistory()
+  const token = ++renderToken
+  const tab = activeTab
+  if (tab === 'collections') await renderCollections(token)
+  else if (tab === 'environments') await renderEnvironments(token)
+  else await renderHistory(token)
+}
+
+/** True once a newer render (a different tab, or a re-triggered same-tab render) has started. */
+function stale(token: number): boolean {
+  return token !== renderToken
 }
 
 /* ---------------- collections ---------------- */
 
-async function renderCollections(): Promise<void> {
+async function renderCollections(token: number): Promise<void> {
   const body = $body()
   if (!store.rootPath) {
     body.innerHTML = `<div class="empty-hint"><p>Open a folder to browse saved requests.</p></div>`
@@ -103,6 +111,7 @@ async function renderCollections(): Promise<void> {
   body.innerHTML = `<div class="empty-hint"><p>Scanning workspace…</p></div>`
 
   const all = await walkForQuickOpen()
+  if (stale(token)) return
   const files = all.filter((f) => /\.(http|rest)$/i.test(f))
   const groups = await Promise.all(
     files.map(async (file) => {
@@ -114,6 +123,7 @@ async function renderCollections(): Promise<void> {
       }
     })
   )
+  if (stale(token)) return
 
   const projectName = store.rootPath.split(/[\\/]/).filter(Boolean).pop() || 'Project'
   const defaultFile = defaultCollectionPath()
@@ -163,13 +173,14 @@ async function renderCollections(): Promise<void> {
 
 /* ---------------- environments ---------------- */
 
-async function renderEnvironments(): Promise<void> {
+async function renderEnvironments(token: number): Promise<void> {
   const body = $body()
   if (!store.rootPath) {
     body.innerHTML = `<div class="empty-hint"><p>Open a folder to manage environments.</p></div>`
     return
   }
   const envs = await loadNamedEnvironments()
+  if (stale(token)) return
   const names = Object.keys(envs)
   const active = getActiveEnvName()
 
@@ -215,9 +226,10 @@ async function renderEnvironments(): Promise<void> {
 
 /* ---------------- history ---------------- */
 
-async function renderHistory(): Promise<void> {
+async function renderHistory(token: number): Promise<void> {
   const body = $body()
   const list = await window.xcode.apiHistory.list()
+  if (stale(token)) return
   if (!list.length) {
     body.innerHTML = `<div class="empty-hint"><p>No requests sent yet.</p></div>`
     return

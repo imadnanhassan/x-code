@@ -83,15 +83,27 @@ export function registerHttp(): void {
     }
   )
 
+  // Two requests sent back-to-back (e.g. two CodeLens "Send" clicks) would
+  // otherwise both read the file before either writes, and the second write
+  // would silently drop the first entry. Chain every read-modify-write
+  // through one queue so they apply one at a time.
+  let historyQueue: Promise<void> = Promise.resolve()
+  function queueHistoryWrite(fn: () => Promise<void>): Promise<void> {
+    historyQueue = historyQueue.then(fn, fn)
+    return historyQueue
+  }
+
   ipcMain.handle('apiHistory:list', async () => readJson<ApiHistoryEntry[]>(HISTORY_FILE, []))
   ipcMain.handle('apiHistory:record', async (_e, entry: ApiHistoryEntry) => {
-    const list = await readJson<ApiHistoryEntry[]>(HISTORY_FILE, [])
-    list.unshift(entry)
-    await writeJson(HISTORY_FILE, list.slice(0, MAX_HISTORY))
+    await queueHistoryWrite(async () => {
+      const list = await readJson<ApiHistoryEntry[]>(HISTORY_FILE, [])
+      list.unshift(entry)
+      await writeJson(HISTORY_FILE, list.slice(0, MAX_HISTORY))
+    })
     return true
   })
   ipcMain.handle('apiHistory:clear', async () => {
-    await writeJson(HISTORY_FILE, [])
+    await queueHistoryWrite(() => writeJson(HISTORY_FILE, []))
     return true
   })
 }

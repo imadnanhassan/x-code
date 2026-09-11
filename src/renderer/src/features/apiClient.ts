@@ -50,18 +50,20 @@ export interface Req {
   name?: string
 }
 
-function subst(s: string): string {
-  return s.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (_m, k) => envKeys[k] ?? process.env?.[k] ?? `{{${k}}}`)
+function subst(s: string, vars: Record<string, string>): string {
+  return s.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (_m, k) => vars[k] ?? process.env?.[k] ?? `{{${k}}}`)
 }
 
 export function parseAll(text: string): Req[] {
   const lines = text.split(/\r?\n/)
-  const vars: Record<string, string> = {}
+  // Scoped to this file only — @var definitions must not leak into other open
+  // .http files (parseAll runs per-file, from CodeLens and from the Collections
+  // scan, and previously mutated the shared envKeys permanently).
+  const vars: Record<string, string> = { ...envKeys }
   for (const l of lines) {
     const m = l.match(/^@([\w-]+)\s*=\s*(.+)$/)
     if (m) vars[m[1]] = m[2].trim()
   }
-  envKeys = { ...envKeys, ...vars }
 
   const reqs: Req[] = []
   let i = 0
@@ -78,12 +80,12 @@ export function parseAll(text: string): Req[] {
       i++
       continue
     }
-    const req: Req = { method: rl[1].toUpperCase(), url: subst(rl[2]), headers: {}, body: '', startLine: i + 1, name: pendingTitle }
+    const req: Req = { method: rl[1].toUpperCase(), url: subst(rl[2], vars), headers: {}, body: '', startLine: i + 1, name: pendingTitle }
     pendingTitle = undefined
     i++
     while (i < lines.length && lines[i].trim() && !/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s/i.test(lines[i])) {
       const h = lines[i].match(/^([A-Za-z-]+):\s*(.*)$/)
-      if (h) req.headers[h[1]] = subst(h[2])
+      if (h) req.headers[h[1]] = subst(h[2], vars)
       i++
     }
     // blank line then body until next ### or request or EOF
@@ -93,7 +95,7 @@ export function parseAll(text: string): Req[] {
       bodyLines.push(lines[i])
       i++
     }
-    req.body = subst(bodyLines.join('\n').trim())
+    req.body = subst(bodyLines.join('\n').trim(), vars)
     reqs.push(req)
   }
   return reqs
