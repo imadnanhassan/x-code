@@ -1,12 +1,18 @@
 # Xcode landing page
 
-Static, dependency-free. `index.html` reads the **latest GitHub Release** at load
-time (via the public GitHub API) and wires the download buttons to its assets, so
-you don't edit this page per release — you just cut a new tag.
+Static, dependency-free, multi-page. Any page with a `[data-dl-*]` element reads
+the **latest GitHub Release** at load time (via the public GitHub API, see
+`site.js`) and wires itself up automatically — so you don't edit these pages per
+release, you just cut a new tag.
 
 ## Files
 
-- `index.html` — the page
+- `index.html` — Home
+- `features.html` — full feature tour
+- `download.html` — download + release notes + system requirements
+- `support.html` — FAQ, troubleshooting, get-help links
+- `styles.css` — shared design system (nav, buttons, sections, components)
+- `site.js` — shared behavior (nav, mobile menu, scroll reveal, release fetch)
 - `favicon.png`, `icon.png` — logo assets
 
 ## Deploy to `xcode.datadropx.net`
@@ -40,7 +46,7 @@ npm version patch          # bumps package.json + creates git tag vX.Y.Z
 git push --follow-tags     # triggers .github/workflows/release.yml
 ```
 
-The workflow builds on `windows-latest` and publishes `Xcode-<ver>-x64.zip` and
-`Xcode-Setup-<ver>.exe` to a GitHub Release. The page then links to them
+The workflow builds on `windows-latest` and publishes `Xcode-Setup-<ver>.exe` (+
+blockmap + `latest.yml`) to a GitHub Release. `download.html` then links to it
 automatically. Add `macos-latest` / `ubuntu-latest` to the workflow matrix and
-flip the `.dl.soon` cards in `index.html` when you're ready to ship those.
+enable the macOS/Linux cards in `download.html` when you're ready to ship those.
