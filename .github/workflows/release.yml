@@ -1,0 +1,59 @@
+name: Release
+
+# Tag a version to build + publish installers to a GitHub Release:
+#   npm version patch     (bumps package.json, makes the tag)
+#   git push --follow-tags
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS/Linux are ready to switch on — add "macos-latest" / "ubuntu-latest".
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags, so release-notes diffing works
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - name: Generate release notes
+        shell: bash
+        run: |
+          prev=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || git rev-list --max-parents=0 HEAD)
+          echo "## Changes" > NOTES.md
+          git log "${prev}..${GITHUB_REF_NAME}" --no-merges --pretty='- %s' >> NOTES.md
+          if [ "$(wc -l < NOTES.md)" -le 1 ]; then
+            echo "- see the full commit history" >> NOTES.md
+          fi
+          echo "" >> NOTES.md
+          echo "**Full changelog:** https://github.com/${GITHUB_REPOSITORY}/compare/${prev}...${GITHUB_REF_NAME}" >> NOTES.md
+          cat NOTES.md
+
+      - name: Build & publish
+        run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attach release notes
+        shell: bash
+        run: gh release edit "${GITHUB_REF_NAME}" --notes-file NOTES.md --latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

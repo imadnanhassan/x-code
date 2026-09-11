@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Support — Xcode by DataDropX</title>
+<meta name="description" content="Frequently asked questions, troubleshooting and support for Xcode by DataDropX." />
+<link rel="icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="support">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="logo">&lt;/&gt;</span>
+      <b>Xcode</b><span>by DataDropX</span>
+    </a>
+    <div class="nav-links">
+      <a class="nl" data-page="home" href="/">Home</a>
+      <a class="nl" data-page="features" href="features">Features</a>
+      <a class="nl" data-page="download" href="download">Download</a>
+      <a class="nl" data-page="support" href="support">Support</a>
+    </div>
+    <div class="nav-right">
+      <a class="btn btn-dark btn-sm" href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download
+      </a>
+      <button class="nav-burger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+  <div class="nav-mobile">
+    <a data-page="home" href="/">Home</a>
+    <a data-page="features" href="features">Features</a>
+    <a data-page="download" href="download">Download</a>
+    <a data-page="support" href="support">Support</a>
+    <a class="btn btn-orange" href="download">Download Xcode</a>
+  </div>
+
+<header class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="d"></span> Support</span>
+    <h1>How can we help?</h1>
+    <p class="lede">Answers to common questions, quick fixes for common issues, and how to reach us.</p>
+  </div>
+</header>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="support-cards reveal">
+      <div class="support-card">
+        <div class="cico" style="margin:0 auto 14px">&#9888;</div>
+        <h3>Report a bug</h3>
+        <p>Found something broken? File it on GitHub Issues — every report gets read.</p>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/imadnanhassan/x-code/issues/new" target="_blank" rel="noopener">Open an issue</a>
+      </div>
+      <div class="support-card">
+        <div class="cico" style="margin:0 auto 14px">&#128161;</div>
+        <h3>Request a feature</h3>
+        <p>Have an idea? Start a discussion or issue — roadmap decisions come from user requests.</p>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/imadnanhassan/x-code/issues" target="_blank" rel="noopener">Suggest something</a>
+      </div>
+      <div class="support-card">
+        <div class="cico" style="margin:0 auto 14px">&lt;/&gt;</div>
+        <h3>Browse the source</h3>
+        <p>Xcode is MIT licensed and fully open — read the code, fork it, contribute.</p>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-soft" id="faq">
+  <div class="wrap">
+    <div class="feat-head center reveal">
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-list reveal">
+      <h3 class="fq-cat">General</h3>
+      <details class="faq-item"><summary>Is this related to Apple's Xcode? <span class="pm">+</span></summary><div class="a">No. Xcode by DataDropX is an independent, cross-platform code editor. It is not made by, endorsed by, or affiliated with Apple, and it does not build iOS/macOS apps.</div></details>
+      <details class="faq-item"><summary>Is it free and open source? <span class="pm">+</span></summary><div class="a">Yes — MIT licensed, forever free. Source, releases and issues all live on <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">GitHub</a>.</div></details>
+      <details class="faq-item"><summary>How much memory does it use? <span class="pm">+</span></summary><div class="a">Around 150–230 MB idle on a typical machine, versus ~350 MB – 1 GB+ for a full IDE. The editor engine only loads once you open a file, and hardware acceleration is a toggle in Settings → Performance.</div></details>
+      <details class="faq-item"><summary>Can I bring my VS Code settings? <span class="pm">+</span></summary><div class="a">Yes. Settings → Import VS Code Settings reads your <code>settings.json</code> and maps font, theme, tab size, word wrap, format-on-save, auto-save and more.</div></details>
+
+      <h3 class="fq-cat" id="roadmap">Platforms &amp; roadmap</h3>
+      <details class="faq-item"><summary>What platforms does it run on? <span class="pm">+</span></summary><div class="a">Windows 10/11 (x64) is available today as a one-click <code>.exe</code> installer. macOS and Linux builds are in progress — star the repo to get notified when they ship.</div></details>
+      <details class="faq-item"><summary>Is the AI assistant available yet? <span class="pm">+</span></summary><div class="a">Not yet — it's next on the roadmap: multi-file edits with a reviewable diff, generate/explain/refactor in place, and your own API key. Everything else on the <a href="features">features page</a> ships today.</div></details>
+
+      <h3 class="fq-cat">Installation &amp; updates</h3>
+      <details class="faq-item"><summary>Windows says "Unknown publisher" — is that safe? <span class="pm">+</span></summary><div class="a">Yes. The installer isn't code-signed yet (that costs a yearly certificate), so SmartScreen flags it as unrecognized rather than malicious. Click <b>More info &rarr; Run anyway</b>. You can always verify the build against its checksum in the release's <code>latest.yml</code> file on GitHub.</div></details>
+      <details class="faq-item"><summary>How do updates work? <span class="pm">+</span></summary><div class="a">Xcode checks for updates in the background and downloads them automatically. When one's ready, an in-app banner lets you install on restart — no installer wizard, no extra clicks.</div></details>
+      <details class="faq-item"><summary>The terminal isn't working — what do I do? <span class="pm">+</span></summary><div class="a">The built-in terminal ships with prebuilt binaries and needs no setup. If it still doesn't open, please <a href="https://github.com/imadnanhassan/x-code/issues/new" target="_blank" rel="noopener">file an issue</a> with your Windows version and the error you see.</div></details>
+
+      <h3 class="fq-cat" id="privacy">Privacy</h3>
+      <details class="faq-item"><summary>Does Xcode collect my data? <span class="pm">+</span></summary><div class="a">No telemetry, no analytics, no accounts. The only network calls Xcode makes are checking GitHub for a newer release and any HTTP requests you explicitly send from the built-in API client.</div></details>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap reveal">
+    <div class="cta-inner">
+      <div>
+        <h2>Still stuck?</h2>
+        <p>Open an issue and we'll get back to you.</p>
+      </div>
+      <a class="btn btn-orange" href="https://github.com/imadnanhassan/x-code/issues/new" target="_blank" rel="noopener">
+        Contact support <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fcol">
+        <a class="brand" href="/"><span class="logo">&lt;/&gt;</span> <b>Xcode</b><span>by DataDropX</span></a>
+        <p>A focused code editor that runs light and stays out of your way.</p>
+      </div>
+      <div class="fcol">
+        <h5>Product</h5>
+        <a href="features">Features</a>
+        <a href="download">Download</a>
+        <a href="https://github.com/imadnanhassan/x-code/releases" target="_blank" rel="noopener">Release notes</a>
+      </div>
+      <div class="fcol">
+        <h5>Support</h5>
+        <a href="support">FAQ</a>
+        <a href="https://github.com/imadnanhassan/x-code/issues" target="_blank" rel="noopener">Report an issue</a>
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Source code</a>
+      </div>
+      <div class="fcol">
+        <h5>Legal</h5>
+        <a href="https://github.com/imadnanhassan/x-code/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="support#privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>&copy; <span data-year></span> DataDropX</span>
+      <div class="fl">
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">GitHub</a>
+        <a href="download">Download</a>
+        <a href="support">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

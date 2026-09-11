@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xcode by DataDropX — a focused code editor</title>
+<meta name="description" content="Xcode is a focused code editor by DataDropX: a clean interface, a built-in terminal, Emmet, 14 themes, and a workspace that feels like yours — running in a fraction of the memory." />
+<meta property="og:title" content="Xcode by DataDropX" />
+<meta property="og:description" content="Your ideas. Beautifully coded. A focused code editor with a built-in terminal and a workspace that feels like yours." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="home">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="logo">&lt;/&gt;</span>
+      <b>Xcode</b><span>by DataDropX</span>
+    </a>
+    <div class="nav-links">
+      <a class="nl" data-page="home" href="/">Home</a>
+      <a class="nl" data-page="features" href="features">Features</a>
+      <a class="nl" data-page="download" href="download">Download</a>
+      <a class="nl" data-page="support" href="support">Support</a>
+    </div>
+    <div class="nav-right">
+      <a class="btn btn-dark btn-sm" href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download
+      </a>
+      <button class="nav-burger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+  <div class="nav-mobile">
+    <a data-page="home" href="/">Home</a>
+    <a data-page="features" href="features">Features</a>
+    <a data-page="download" href="download">Download</a>
+    <a data-page="support" href="support">Support</a>
+    <a class="btn btn-orange" href="download">Download Xcode</a>
+  </div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="pill"><span class="d"></span> Built for your next big idea</span>
+    <h1>Your ideas.<br />Beautifully <span class="o">coded.</span></h1>
+    <p class="lede">A focused code editor with a built-in terminal, real source control, and a workspace that feels like yours — running in a fraction of the memory.</p>
+    <div class="hero-cta">
+      <a class="btn btn-orange" data-dl-smart href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-dl-label>Download Xcode</span>
+      </a>
+      <a class="btn btn-ghost" href="features">Explore features <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <p class="by">Free &amp; open source · MIT licensed</p>
+    <p class="by" data-dl-count-line style="display:none;margin-top:4px"><span data-dl-count>0</span> downloads and counting</p>
+  </div>
+</header>
+
+<div class="shot-wrap reveal">
+  <div class="shot" aria-label="Xcode editor screenshot">
+    <div class="m-top">
+      <span class="logo">&lt;/&gt;</span>
+      <div class="brand"><b>Xcode</b><span>by DataDropX</span></div>
+      <div class="m-search">Search files, commands&hellip; <span class="kbd">Ctrl K</span></div>
+      <div class="m-top-right">
+        <span>&#9636;</span><span>&#9707;</span><span>&#9881;</span>
+        <span class="m-run">&#9654; Run</span>
+        <span class="m-win">&ndash; &#9633; &times;</span>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="m-act"><span class="on">&#9782;</span><span>&#9906;</span><span>&#8623;</span><span>&#9656;</span><span>&#9635;</span></div>
+      <div class="m-side">
+        <div class="h">PROJECT <span>&#8943;</span></div>
+        <div class="row"><span class="ic">&#9662;</span> datadropx-web</div>
+        <div class="row ind"><span class="ic">&#9656;</span> .next</div>
+        <div class="row ind"><span class="ic">&#9656;</span> node_modules</div>
+        <div class="row ind"><span class="ic">&#9656;</span> public</div>
+        <div class="row ind"><span class="ic">&#9662;</span> src</div>
+        <div class="row ind2"><span class="ic">&#9662;</span> app</div>
+        <div class="row ind2 sel" style="padding-left:38px"><span class="ic">&#9635;</span> page.tsx <span class="m">M</span></div>
+        <div class="row ind2" style="padding-left:38px"><span class="ic">&#9635;</span> layout.tsx</div>
+        <div class="row ind2" style="padding-left:38px"><span class="ic">#</span> globals.css</div>
+        <div class="row ind2"><span class="ic">&#9662;</span> components</div>
+        <div class="row" style="padding-left:38px"><span class="ic">&#9635;</span> DashboardCard.tsx</div>
+        <div class="row" style="padding-left:38px"><span class="ic">&#9635;</span> Navbar.tsx</div>
+        <div class="row ind2"><span class="ic">&#9656;</span> lib</div>
+        <div class="row ind"><span class="ic">&#9881;</span> .env.local</div>
+        <div class="row ind"><span class="ic">&#9670;</span> .gitignore</div>
+        <div class="row ind"><span class="ic">N</span> next.config.js</div>
+        <div class="row ind"><span class="ic">{}</span> package.json</div>
+        <div class="row ind"><span class="ic">&#9634;</span> README.md</div>
+        <div class="row ind"><span class="ic">TS</span> tsconfig.json</div>
+      </div>
+      <div class="m-editor">
+        <div class="m-tabs">
+          <div class="m-tab act">&#9635; page.tsx &times;</div>
+          <div class="m-tab">&#9635; dashboard.tsx</div>
+        </div>
+        <div class="m-bc">src &rsaquo; app &rsaquo; page.tsx &rsaquo; Dashboard</div>
+        <div class="m-code">
+          <div class="cl"><span class="n">1</span><span><span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;</span></div>
+          <div class="cl"><span class="n">2</span><span><span class="kw">import</span> { DashboardCard } <span class="kw">from</span> <span class="st">'@/components/DashboardCard'</span>;</span></div>
+          <div class="cl"><span class="n">3</span><span></span></div>
+          <div class="cl"><span class="n">4</span><span><span class="kw">export default function</span> <span class="fn">Dashboard</span>() {</span></div>
+          <div class="cl"><span class="n">5</span><span>&nbsp;&nbsp;<span class="kw">return</span> (</span></div>
+          <div class="cl"><span class="n">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"min-h-screen bg-gray-950"</span>&gt;</span></div>
+          <div class="cl"><span class="n">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"max-w-4xl mx-auto px-6 py-10"</span>&gt;</span></div>
+          <div class="cl"><span class="n">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"flex items-center justify-between mb-8"</span>&gt;</span></div>
+          <div class="cl"><span class="n">9</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">10</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">h1</span> <span class="at">className</span>=<span class="st">"text-2xl font-semibold text-white"</span>&gt;</span></div>
+          <div class="cl hl"><span class="n">11</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome back &#128075;</span></div>
+          <div class="cl"><span class="n">12</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">h1</span>&gt;</span></div>
+          <div class="cl"><span class="n">13</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">p</span> <span class="at">className</span>=<span class="st">"text-gray-400 mt-1"</span>&gt;</span></div>
+          <div class="cl"><span class="n">14</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Here's an overview of your project activity.</span></div>
+          <div class="cl"><span class="n">15</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">p</span>&gt;</span></div>
+          <div class="cl"><span class="n">16</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">17</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="ty">div</span> <span class="at">className</span>=<span class="st">"grid grid-cols-1 md:grid-cols-3 gap-4"</span>&gt;</span></div>
+          <div class="cl"><span class="n">18</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="fn">DashboardCard</span> <span class="at">title</span>=<span class="st">"Total Users"</span> <span class="at">value</span>=<span class="st">"2,543"</span> /&gt;</span></div>
+          <div class="cl"><span class="n">19</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="fn">DashboardCard</span> <span class="at">title</span>=<span class="st">"Active Projects"</span> <span class="at">value</span>=<span class="st">"12"</span> /&gt;</span></div>
+          <div class="cl"><span class="n">20</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">21</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">22</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="ty">div</span>&gt;</span></div>
+          <div class="cl"><span class="n">23</span><span>&nbsp;&nbsp;);</span></div>
+          <div class="cl"><span class="n">24</span><span>}</span></div>
+        </div>
+        <div class="m-panel">
+          <div class="pt"><span class="act">Terminal</span><span>Output</span><span>Problems&nbsp;&nbsp;0</span></div>
+          <div class="m-term">
+            <div><span class="ok">&#10230;</span> datadropx-web&nbsp;&nbsp;<span class="mut">npm run dev</span></div>
+            <div class="mut">&gt; next dev</div>
+            <div><span class="ok">&#10003;</span> Ready in 878ms</div>
+            <div><span class="ok">&#10003;</span> Local:&nbsp;&nbsp;<span class="lnk">http://localhost:3000</span></div>
+            <div><span class="ok">&#10003;</span> Compiled successfully (312 modules)</div>
+          </div>
+        </div>
+        <div class="m-status">
+          <span>&#9095; main</span><span>&#10003; 0</span><span>&#9888; 0</span><span>&#9679; All good</span>
+          <span class="sp">Ln 11, Col 26</span><span>Spaces: 2</span><span>UTF-8</span><span>LF</span><span>TypeScript</span><span>{} Prettier</span>
+        </div>
+      </div>
+      <div class="m-ai">
+        <div class="ai-h"><span class="spark">&#10022;</span> <b>Xcode AI</b> <span class="st-dot">&#9679; Coming soon</span></div>
+        <div class="ai-body">
+          <div class="msg"><div class="who">You &middot; 10:24 AM</div><p>Build a clean analytics dashboard</p></div>
+          <div class="msg"><div class="who">Xcode AI &middot; 10:24 AM</div><p>I've created a responsive layout with reusable components.</p></div>
+          <div class="files">
+            <div class="ft">&#9635; 3 files updated</div>
+            <div class="fr">Dashboard.tsx <span class="plus">+42</span></div>
+            <div class="fr">StatCard.tsx <span class="plus">+28</span></div>
+            <div class="fr">page.tsx <span class="plus">+12</span></div>
+            <div class="apply"><span class="a1">&#8599; Review changes</span><span class="a2">&#10003; Apply all</span></div>
+          </div>
+          <div class="chk"><span class="c">&#10003;</span> Responsive layout that works on all screens</div>
+          <div class="chk"><span class="c">&#10003;</span> Reusable, composable UI components</div>
+        </div>
+        <div class="ask">Ask Xcode AI&hellip; <span class="send">&#8593;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap reveal">
+    <div class="stat-strip">
+      <div class="st"><div class="num"><span class="o">150</span>&ndash;230 MB</div><div class="lbl">idle memory use</div></div>
+      <div class="st"><div class="num">16<span class="o">+</span></div><div class="lbl">built-in features</div></div>
+      <div class="st"><div class="num">14</div><div class="lbl">themes included</div></div>
+      <div class="st"><div class="num">100<span class="o">%</span></div><div class="lbl">free &amp; open source</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="highlights">
+  <div class="wrap">
+    <div class="feat-head reveal">
+      <h2>Everything you need.<br />Nothing in your way.</h2>
+      <p>A clean editor with the tools you actually reach for — no extension hunting.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal reveal-1">
+        <div class="cico">&lt;/&gt;</div>
+        <h3>Code with clarity</h3>
+        <p>Monaco-powered editing, 14 themes, a command palette and cross-file search — a clean interface built for deep focus.</p>
+        <div class="inset"><div class="ii">
+          <div class="tree-row">&#9662; src</div>
+          <div class="tree-row" style="padding-left:12px">&#9662; app</div>
+          <div class="tree-row s" style="padding-left:24px">&#9635; page.tsx <span style="margin-left:auto">M</span></div>
+          <div class="tree-row" style="padding-left:24px">&#9635; layout.tsx</div>
+        </div></div>
+      </div>
+      <div class="card reveal reveal-2">
+        <div class="cico">&#8862;</div>
+        <h3>Real source control</h3>
+        <p>Stage, commit, push and pull without leaving the editor — inline diffs, blame, branches and merge-conflict resolution.</p>
+        <div class="inset"><div class="ii">
+          <div class="tree-row s">&#9635; page.tsx <span style="margin-left:auto;color:var(--green)">+12</span></div>
+          <div class="tree-row">&#9635; layout.tsx <span style="margin-left:auto;color:var(--orange)">M</span></div>
+          <div class="tree-row" style="color:var(--faint)">&#9095; main &middot; 2 staged</div>
+        </div></div>
+      </div>
+      <div class="card reveal reveal-3">
+        <div class="cico">&gt;_</div>
+        <h3>Stay in flow</h3>
+        <p>A real built-in terminal and task runner, right where you work — multiple PTY sessions, no native build step required.</p>
+        <div class="inset">
+          <div class="ibar"><span class="a">Terminal</span><span>Output</span><span>Problems</span></div>
+          <div class="ii tline">
+            <div>&gt; npm run dev</div>
+            <div class="mut">&gt; next dev</div>
+            <div><span class="ok">&#10003;</span> Ready in 878ms <span class="cur">&#9608;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:38px"><a class="btn btn-ghost" href="features">See all 16 features <span aria-hidden="true">&rarr;</span></a></p>
+  </div>
+</section>
+
+<section class="bg-soft">
+  <div class="wrap">
+    <div class="spotlight reveal">
+      <div class="sp-copy">
+        <span class="eyebrow"><span class="d"></span> Built to stay light</span>
+        <h2>The editor, without the overhead.</h2>
+        <p>Xcode loads the editor engine only when you open a file, skips the extension-host process VS Code always runs, and keeps everything you need built in — not bolted on.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> ~150–230 MB idle, a fraction of a full IDE</li>
+          <li><span class="c">&#10003;</span> One process instead of five — no extension host, no shared process</li>
+          <li><span class="c">&#10003;</span> Hardware acceleration and animations are toggles, not defaults</li>
+        </ul>
+      </div>
+      <div class="sp-visual"><div class="inner">
+        <div class="m-panel" style="border-top:none">
+          <div class="pt"><span class="act">Terminal</span><span>Output</span><span>Problems&nbsp;&nbsp;0</span></div>
+          <div class="m-term">
+            <div><span class="ok">&#10230;</span> xcode&nbsp;&nbsp;<span class="mut">Memory usage</span></div>
+            <div><span class="ok">&#10003;</span> Main process:&nbsp;&nbsp;41 MB</div>
+            <div><span class="ok">&#10003;</span> Renderer:&nbsp;&nbsp;112 MB</div>
+            <div><span class="ok">&#10003;</span> GPU:&nbsp;&nbsp;38 MB</div>
+            <div class="mut">Total:&nbsp;&nbsp;191 MB idle</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap reveal">
+    <div class="cta-inner">
+      <div>
+        <h2>Your next project starts here.</h2>
+        <p>A more focused, more powerful way to code — free, forever.</p>
+      </div>
+      <a class="btn btn-orange" data-dl-smart href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-dl-label>Download Xcode</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<section class="bg-soft">
+  <div class="wrap">
+    <div class="feat-head center reveal">
+      <h2>Questions</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item" open><summary>Is this related to Apple's Xcode? <span class="pm">+</span></summary><div class="a">No. Xcode by DataDropX is an independent editor. It is not made by, endorsed by, or affiliated with Apple, and it does not build iOS/macOS apps.</div></details>
+      <details class="faq-item"><summary>How much memory does it use? <span class="pm">+</span></summary><div class="a">Around 150–230 MB idle on a typical machine, versus ~350 MB – 1 GB+ for a full IDE.</div></details>
+      <details class="faq-item"><summary>Is it free and open source? <span class="pm">+</span></summary><div class="a">Yes — MIT licensed. Source, releases and issues are on GitHub.</div></details>
+    </div>
+    <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost" href="support">More questions, answered <span aria-hidden="true">&rarr;</span></a></p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fcol">
+        <a class="brand" href="/"><span class="logo">&lt;/&gt;</span> <b>Xcode</b><span>by DataDropX</span></a>
+        <p>A focused code editor that runs light and stays out of your way.</p>
+      </div>
+      <div class="fcol">
+        <h5>Product</h5>
+        <a href="features">Features</a>
+        <a href="download">Download</a>
+        <a href="https://github.com/imadnanhassan/x-code/releases" target="_blank" rel="noopener">Release notes</a>
+      </div>
+      <div class="fcol">
+        <h5>Support</h5>
+        <a href="support">FAQ</a>
+        <a href="https://github.com/imadnanhassan/x-code/issues" target="_blank" rel="noopener">Report an issue</a>
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Source code</a>
+      </div>
+      <div class="fcol">
+        <h5>Legal</h5>
+        <a href="https://github.com/imadnanhassan/x-code/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="support#privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>&copy; <span data-year></span> DataDropX</span>
+      <div class="fl">
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">GitHub</a>
+        <a href="download">Download</a>
+        <a href="support">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

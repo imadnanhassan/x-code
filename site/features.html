@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Features — Xcode by DataDropX</title>
+<meta name="description" content="Source control, a real terminal, ESLint/Prettier, live preview, an API client, spell check and 14 themes — everything built into Xcode, a focused code editor by DataDropX." />
+<link rel="icon" href="favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="features">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="logo">&lt;/&gt;</span>
+      <b>Xcode</b><span>by DataDropX</span>
+    </a>
+    <div class="nav-links">
+      <a class="nl" data-page="home" href="/">Home</a>
+      <a class="nl" data-page="features" href="features">Features</a>
+      <a class="nl" data-page="download" href="download">Download</a>
+      <a class="nl" data-page="support" href="support">Support</a>
+    </div>
+    <div class="nav-right">
+      <a class="btn btn-dark btn-sm" href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Download
+      </a>
+      <button class="nav-burger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+  <div class="nav-mobile">
+    <a data-page="home" href="/">Home</a>
+    <a data-page="features" href="features">Features</a>
+    <a data-page="download" href="download">Download</a>
+    <a data-page="support" href="support">Support</a>
+    <a class="btn btn-orange" href="download">Download Xcode</a>
+  </div>
+
+<div class="subnav">
+  <div class="wrap">
+    <a href="#editing" class="on">Editing</a>
+    <a href="#source-control">Source control</a>
+    <a href="#terminal">Terminal &amp; tasks</a>
+    <a href="#quality">Linting &amp; preview</a>
+    <a href="#personalize">Personalization</a>
+    <a href="#all">All 16, at a glance</a>
+  </div>
+</div>
+
+<header class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="d"></span> Features</span>
+    <h1>Everything you need.<br />Nothing you don't.</h1>
+    <p class="lede">Xcode ships with the tools you'd normally hunt down as extensions — built in, tuned to work together, and light on memory.</p>
+  </div>
+</header>
+
+<section id="editing">
+  <div class="wrap">
+    <div class="spotlight reveal">
+      <div class="sp-copy">
+        <span class="eyebrow"><span class="d"></span> Editing</span>
+        <h2>Code with clarity.</h2>
+        <p>Monaco-powered editing — the same engine behind VS Code — with 14 themes, a command palette, cross-file search &amp; replace, Emmet, and path/env-aware autocomplete.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> 14 themes: Xcode Dark/Light, Dracula, One Dark, Monokai, Nord, Tokyo Night, Solarized, GitHub Dark, Gruvbox, Ayu, Rosé Pine, Night Owl, Catppuccin Latte</li>
+          <li><span class="c">&#10003;</span> Command palette &amp; quick-open, cross-file search + replace-all</li>
+          <li><span class="c">&#10003;</span> Emmet abbreviations, code snippets, and your own via <code>.xcode/snippets.json</code></li>
+          <li><span class="c">&#10003;</span> Problems panel + Error Lens inline, with a TODO/FIXME scanner</li>
+        </ul>
+      </div>
+      <div class="sp-visual"><div class="inner">
+        <div class="m-tabs">
+          <div class="m-tab act">&#9635; page.tsx &times;</div>
+          <div class="m-tab">&#9635; dashboard.tsx</div>
+        </div>
+        <div class="m-code" style="padding:14px 0">
+          <div class="cl"><span class="n">1</span><span><span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;</span></div>
+          <div class="cl"><span class="n">2</span><span><span class="kw">export default function</span> <span class="fn">Dashboard</span>() {</span></div>
+          <div class="cl hl"><span class="n">3</span><span>&nbsp;&nbsp;<span class="kw">return</span> &lt;<span class="ty">h1</span>&gt;Welcome&lt;/<span class="ty">h1</span>&gt;</span></div>
+          <div class="cl"><span class="n">4</span><span>}</span></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="source-control" class="bg-soft">
+  <div class="wrap">
+    <div class="spotlight rev reveal">
+      <div class="sp-copy">
+        <span class="eyebrow"><span class="d"></span> Source control</span>
+        <h2>Git, without leaving the editor.</h2>
+        <p>Stage, commit, push and pull from the sidebar. See exactly what changed with inline diffs against HEAD, resolve merge conflicts with one click, and read blame annotations right on the line.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> Stage / unstage / discard, commit, push &amp; pull</li>
+          <li><span class="c">&#10003;</span> Branch switcher and commit history</li>
+          <li><span class="c">&#10003;</span> Inline diff viewer + merge-conflict CodeLens</li>
+          <li><span class="c">&#10003;</span> Git blame annotations, per line</li>
+        </ul>
+      </div>
+      <div class="sp-visual"><div class="inner">
+        <div class="ii" style="padding:16px;font-family:var(--mono);font-size:12px">
+          <div class="tree-row s">&#9635; page.tsx <span style="margin-left:auto;color:var(--green)">+12 &minus;3</span></div>
+          <div class="tree-row">&#9635; layout.tsx <span style="margin-left:auto;color:var(--orange)">M</span></div>
+          <div class="tree-row">&#9635; Navbar.tsx <span style="margin-left:auto;color:var(--green)">A</span></div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line-2);color:var(--faint)">&#9095; main &middot; 3 staged &middot; &#8593; 1 to push</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="terminal">
+  <div class="wrap">
+    <div class="spotlight reveal">
+      <div class="sp-copy">
+        <span class="eyebrow"><span class="d"></span> Terminal &amp; tasks</span>
+        <h2>Stay in flow.</h2>
+        <p>A real, built-in terminal — PowerShell, bash or zsh — with multiple sessions, no native build step required. Run your project's npm/yarn/pnpm scripts straight from a task runner.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> Real PTY sessions, not a fake shell</li>
+          <li><span class="c">&#10003;</span> Multiple terminals, "open terminal here"</li>
+          <li><span class="c">&#10003;</span> Auto-discovers <code>package.json</code> scripts + <code>.xcode/tasks.json</code></li>
+        </ul>
+      </div>
+      <div class="sp-visual"><div class="inner">
+        <div class="ibar"><span class="a">Terminal</span><span>Output</span><span>Problems</span></div>
+        <div class="ii" style="font-family:var(--mono);font-size:12px;padding:14px">
+          <div>&gt; npm run dev</div>
+          <div class="mut">&gt; next dev</div>
+          <div><span class="ok">&#10003;</span> Ready in 878ms</div>
+          <div><span class="ok">&#10003;</span> Local: <span class="lnk">http://localhost:3000</span> <span class="cur">&#9608;</span></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quality" class="bg-soft">
+  <div class="wrap">
+    <div class="spotlight rev reveal">
+      <div class="sp-copy">
+        <span class="eyebrow"><span class="d"></span> Linting, formatting &amp; preview</span>
+        <h2>Real rules. Real feedback.</h2>
+        <p>Xcode runs your project's own ESLint and Prettier straight from <code>node_modules</code> — real rules, quick fixes, format on save. Open a live preview pane beside the editor, or fire off an API request without leaving your file.</p>
+        <ul>
+          <li><span class="c">&#10003;</span> Project-aware ESLint + Prettier, fix-all &amp; format on save</li>
+          <li><span class="c">&#10003;</span> Live preview pane — dev server or local file, responsive sizes</li>
+          <li><span class="c">&#10003;</span> Built-in API client — write <code>.http</code> requests, hit Send</li>
+        </ul>
+      </div>
+      <div class="sp-visual"><div class="inner">
+        <div class="ii" style="padding:16px;font-family:var(--mono);font-size:11.5px">
+          <div><span class="ok">&#10003;</span> GET /api/users &middot; 200 &middot; 42ms</div>
+          <div class="mut">{ "users": 3, "ok": true }</div>
+          <div style="margin-top:8px;color:var(--faint)">eslint &middot; 0 problems &middot; formatted on save</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="personalize">
+  <div class="wrap">
+    <div class="feat-head center reveal">
+      <h2>Make it yours.</h2>
+      <p style="margin-inline:auto">Every keybinding is editable. Bring your VS Code settings in one click.</p>
+    </div>
+    <div class="cards reveal">
+      <div class="card">
+        <div class="cico">&#8984;</div>
+        <h3>Editable shortcuts</h3>
+        <p>Every command's key binding in one searchable table — click to rebind, with conflict detection built in.</p>
+      </div>
+      <div class="card">
+        <div class="cico">&#10022;</div>
+        <h3>Import from VS Code</h3>
+        <p>One click maps your <code>settings.json</code> — font, theme, tab size, format-on-save and more.</p>
+      </div>
+      <div class="card">
+        <div class="cico">Aa</div>
+        <h3>Spell check</h3>
+        <p>Comments, strings and Markdown — squiggles, suggestions, and a personal dictionary. Opt-in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="all" class="bg-soft">
+  <div class="wrap">
+    <div class="feat-head center reveal">
+      <h2>All 16, at a glance</h2>
+    </div>
+    <div class="feat-grid reveal">
+      <div class="ft"><b>Source Control</b><span>Stage, commit, push/pull, branch switcher &amp; history, inline diff vs HEAD, merge-conflict CodeLens, blame annotations, git status in the tree.</span></div>
+      <div class="ft"><b>Integrated terminal</b><span>Real PTY (PowerShell&nbsp;7 / bash / zsh), multiple sessions, run-task &amp; run-command palettes, "open terminal here".</span></div>
+      <div class="ft"><b>ESLint &amp; Prettier</b><span>Runs your project's own eslint / prettier from node_modules — real rules, quick fixes, fix-all, format on save.</span></div>
+      <div class="ft"><b>Live preview</b><span>A web pane beside the editor — dev-server URL or local file, reload, responsive / mobile / tablet / desktop sizes.</span></div>
+      <div class="ft"><b>API client</b><span>Write <code>.http</code> requests, hit "Send", read the response — status, timing, headers and pretty JSON — without leaving the editor.</span></div>
+      <div class="ft"><b>Emmet + snippets</b><span><code>ul&gt;li*3</code> ↹, built-in JS/TS/React snippets, and your own via <code>.xcode/snippets.json</code>.</span></div>
+      <div class="ft"><b>Problems &amp; Error Lens</b><span>All diagnostics in one panel, plus the message inline at the end of the line. TODO / FIXME scanner too.</span></div>
+      <div class="ft"><b>Markdown preview</b><span>Live side-by-side GitHub-flavoured render, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>.</span></div>
+      <div class="ft"><b>Local history</b><span>Every save is snapshotted — diff any past version and restore it in a click.</span></div>
+      <div class="ft"><b>Path &amp; env intel</b><span>Autocomplete for <code>./</code> import paths, <code>process.env.*</code> keys from your <code>.env</code>, optional value masking.</span></div>
+      <div class="ft"><b>Editable shortcuts</b><span>Every command's key binding in one table — click to rebind, with conflict detection. <kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>+<kbd>S</kbd>.</span></div>
+      <div class="ft"><b>Spell check</b><span>Comments, strings and Markdown — squiggles, suggestions, and a personal dictionary. Opt-in.</span></div>
+      <div class="ft"><b>14 themes</b><span>Xcode Dark/Light, Dracula, One Dark, Monokai, Nord, Tokyo Night, Solarized, GitHub Dark, Gruvbox, Ayu, Rosé Pine, Night Owl, Catppuccin Latte — with live preview.</span></div>
+      <div class="ft"><b>Import from VS Code</b><span>One click maps your <code>settings.json</code> — font, theme, tabs, format-on-save and more.</span></div>
+      <div class="ft"><b>Auto-update</b><span>New releases download in the background; restart to install — no installer wizard, no clicks.</span></div>
+      <div class="ft"><b>Low memory</b><span>~150–230&nbsp;MB idle. The editor engine only loads on first file; hardware acceleration is a toggle.</span></div>
+    </div>
+    <div class="feat-head center" style="margin-top:46px;margin-bottom:0">
+      <p style="margin-inline:auto"><span class="eyebrow" style="margin-right:6px"><span class="d"></span></span>Xcode AI — an in-editor assistant for multi-file edits — is next on the roadmap.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap reveal">
+    <div class="cta-inner">
+      <div>
+        <h2>See it for yourself.</h2>
+        <p>Free, open source, and ready in under a minute.</p>
+      </div>
+      <a class="btn btn-orange" data-dl-smart href="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-dl-label>Download Xcode</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fcol">
+        <a class="brand" href="/"><span class="logo">&lt;/&gt;</span> <b>Xcode</b><span>by DataDropX</span></a>
+        <p>A focused code editor that runs light and stays out of your way.</p>
+      </div>
+      <div class="fcol">
+        <h5>Product</h5>
+        <a href="features">Features</a>
+        <a href="download">Download</a>
+        <a href="https://github.com/imadnanhassan/x-code/releases" target="_blank" rel="noopener">Release notes</a>
+      </div>
+      <div class="fcol">
+        <h5>Support</h5>
+        <a href="support">FAQ</a>
+        <a href="https://github.com/imadnanhassan/x-code/issues" target="_blank" rel="noopener">Report an issue</a>
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">Source code</a>
+      </div>
+      <div class="fcol">
+        <h5>Legal</h5>
+        <a href="https://github.com/imadnanhassan/x-code/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="support#privacy">Privacy</a>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>&copy; <span data-year></span> DataDropX</span>
+      <div class="fl">
+        <a href="https://github.com/imadnanhassan/x-code" target="_blank" rel="noopener">GitHub</a>
+        <a href="download">Download</a>
+        <a href="support">Support</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+<script>
+  var links = document.querySelectorAll('.subnav a')
+  var targets = Array.prototype.map.call(links, function (a) { return document.querySelector(a.getAttribute('href')) }).filter(Boolean)
+  if ('IntersectionObserver' in window && targets.length) {
+    var io2 = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return
+        links.forEach(function (a) { a.classList.remove('on') })
+        var match = document.querySelector('.subnav a[href="#' + e.target.id + '"]')
+        if (match) match.classList.add('on')
+      })
+    }, { rootMargin: '-45% 0px -50% 0px' })
+    targets.forEach(function (t) { io2.observe(t) })
+  }
+</script>
+</body>
+</html>
