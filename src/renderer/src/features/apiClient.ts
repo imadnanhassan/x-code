@@ -4,7 +4,13 @@ import { bus, Ev } from '../core/bus'
 import { getEditor, current, openPath } from './editor'
 import { toast } from './toast'
 
+let fileEnvKeys: Record<string, string> = {}
+let namedEnvKeys: Record<string, string> = {}
 let envKeys: Record<string, string> = {}
+
+function recomputeEnv(): void {
+  envKeys = { ...fileEnvKeys, ...namedEnvKeys }
+}
 
 const $host = () => document.getElementById('editor-host')!
 const $pane = () => document.getElementById('api-response') as HTMLElement
@@ -35,19 +41,20 @@ function registerHttpLanguage(): void {
 
 /* ---------------- request parsing ---------------- */
 
-interface Req {
+export interface Req {
   method: string
   url: string
   headers: Record<string, string>
   body: string
   startLine: number
+  name?: string
 }
 
 function subst(s: string): string {
   return s.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (_m, k) => envKeys[k] ?? process.env?.[k] ?? `{{${k}}}`)
 }
 
-function parseAll(text: string): Req[] {
+export function parseAll(text: string): Req[] {
   const lines = text.split(/\r?\n/)
   const vars: Record<string, string> = {}
   for (const l of lines) {
@@ -58,13 +65,21 @@ function parseAll(text: string): Req[] {
 
   const reqs: Req[] = []
   let i = 0
+  let pendingTitle: string | undefined
   while (i < lines.length) {
+    const titleMatch = lines[i].match(/^#{3,}\s*(.*)$/)
+    if (titleMatch) {
+      pendingTitle = titleMatch[1].trim() || undefined
+      i++
+      continue
+    }
     const rl = lines[i].match(/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+(\S+)/i)
     if (!rl) {
       i++
       continue
     }
-    const req: Req = { method: rl[1].toUpperCase(), url: subst(rl[2]), headers: {}, body: '', startLine: i + 1 }
+    const req: Req = { method: rl[1].toUpperCase(), url: subst(rl[2]), headers: {}, body: '', startLine: i + 1, name: pendingTitle }
+    pendingTitle = undefined
     i++
     while (i < lines.length && lines[i].trim() && !/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s/i.test(lines[i])) {
       const h = lines[i].match(/^([A-Za-z-]+):\s*(.*)$/)
@@ -86,7 +101,7 @@ function parseAll(text: string): Req[] {
 
 /* ---------------- send + render ---------------- */
 
-async function send(req: Req): Promise<void> {
+export async function send(req: Req): Promise<void> {
   showPane(true)
   $pane().querySelector('.ar-status')!.textContent = 'Sending…'
   $pane().querySelector('.ar-meta')!.textContent = `${req.method} ${req.url}`
@@ -98,6 +113,18 @@ async function send(req: Req): Promise<void> {
     headers: req.headers,
     body: req.body || undefined
   })
+
+  void window.xcode.apiHistory.record({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    method: req.method,
+    url: req.url,
+    ok: res.ok,
+    status: res.status,
+    timeMs: res.timeMs,
+    size: res.size,
+    at: Date.now()
+  })
+  bus.emit('apiHistory:changed')
 
   const statusEl = $pane().querySelector('.ar-status') as HTMLElement
   if (!res.ok) {
@@ -163,29 +190,104 @@ export function initApiClient(): void {
     if (reqs[idx]) void send(reqs[idx])
   })
 
-  bus.on(Ev.workspaceOpened, loadEnv)
+  bus.on(Ev.workspaceOpened, () => {
+    void loadEnv()
+    void applyActiveEnv()
+  })
   void loadEnv()
+  void applyActiveEnv()
+}
+
+/** Restores whichever named environment was last selected for this workspace. */
+async function applyActiveEnv(): Promise<void> {
+  const name = getActiveEnvName()
+  namedEnvKeys = {}
+  if (name) {
+    const envs = await loadNamedEnvironments()
+    namedEnvKeys = envs[name] || {}
+  }
+  recomputeEnv()
 }
 
 async function loadEnv(): Promise<void> {
-  envKeys = {}
-  if (!store.rootPath) return
-  try {
-    const list = (await window.xcode.fs.list(store.rootPath)) as any[]
-    for (const f of list.filter((e) => !e.isDirectory && /^\.env(\.|$)/.test(e.name))) {
-      try {
-        const txt = await window.xcode.fs.read(f.path)
-        for (const l of txt.split(/\r?\n/)) {
-          const m = l.match(/^\s*([A-Za-z_][\w]*)\s*=\s*(.*)$/)
-          if (m) envKeys[m[1]] = m[2].replace(/^["']|["']$/g, '')
+  fileEnvKeys = {}
+  if (store.rootPath) {
+    try {
+      const list = (await window.xcode.fs.list(store.rootPath)) as any[]
+      for (const f of list.filter((e) => !e.isDirectory && /^\.env(\.|$)/.test(e.name))) {
+        try {
+          const txt = await window.xcode.fs.read(f.path)
+          for (const l of txt.split(/\r?\n/)) {
+            const m = l.match(/^\s*([A-Za-z_][\w]*)\s*=\s*(.*)$/)
+            if (m) fileEnvKeys[m[1]] = m[2].replace(/^["']|["']$/g, '')
+          }
+        } catch {
+          /* skip */
         }
-      } catch {
-        /* skip */
       }
+    } catch {
+      /* none */
     }
-  } catch {
-    /* none */
   }
+  recomputeEnv()
+}
+
+/* ---------------- named environments (.xcode/http-env.json) ---------------- */
+
+function envFilePath(): string | null {
+  if (!store.rootPath) return null
+  return store.rootPath + (store.rootPath.includes('\\') ? '\\.xcode\\http-env.json' : '/.xcode/http-env.json')
+}
+
+export async function loadNamedEnvironments(): Promise<Record<string, Record<string, string>>> {
+  const file = envFilePath()
+  if (!file) return {}
+  try {
+    const txt = await window.xcode.fs.read(file)
+    const parsed = JSON.parse(txt)
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+export function getActiveEnvName(): string {
+  if (!store.rootPath) return ''
+  return store.state.apiActiveEnv?.[store.rootPath] || ''
+}
+
+export async function setActiveEnvironment(name: string): Promise<void> {
+  namedEnvKeys = {}
+  if (name) {
+    const envs = await loadNamedEnvironments()
+    namedEnvKeys = envs[name] || {}
+  }
+  recomputeEnv()
+  if (store.rootPath) {
+    await store.persistState({ apiActiveEnv: { ...store.state.apiActiveEnv, [store.rootPath]: name } })
+  }
+  bus.emit('apiEnv:changed')
+}
+
+export async function ensureEnvFile(): Promise<string | null> {
+  const file = envFilePath()
+  if (!file) return null
+  try {
+    await window.xcode.fs.read(file)
+  } catch {
+    await window.xcode.fs.write(
+      file,
+      JSON.stringify(
+        {
+          dev: { baseUrl: 'http://localhost:3000' },
+          prod: { baseUrl: 'https://api.example.com' }
+        },
+        null,
+        2
+      )
+    )
+  }
+  return file
 }
 
 export async function newRequestFile(): Promise<void> {

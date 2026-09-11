@@ -1514,6 +1514,142 @@
   border-left-color: var(--ok);
 }
 
+/* ---------- API client sidebar (collections / environments / history) ---------- */
+.api-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+.api-tab {
+  padding: 8px 8px;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--fg-faint);
+  border-bottom: 2px solid transparent;
+}
+.api-tab:hover {
+  color: var(--fg-muted);
+}
+.api-tab.active {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+.api-tab-body {
+  padding-top: 4px;
+}
+.api-group-h {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 4px 14px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--fg-faint);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.api-count {
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 10px;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.api-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 26px;
+  padding: 3px 10px 3px 14px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.api-row:hover {
+  background: var(--line-highlight);
+}
+.api-method {
+  flex-shrink: 0;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  color: var(--fg-muted);
+  min-width: 38px;
+  text-align: center;
+}
+.api-m-get { color: var(--info); }
+.api-m-post { color: var(--ok); }
+.api-m-put, .api-m-patch { color: var(--warn); }
+.api-m-delete { color: var(--error); }
+.api-m-ok { color: var(--ok); }
+.api-m-warn { color: var(--warn); }
+.api-m-fail { color: var(--error); }
+.api-name {
+  flex: 1;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.api-send {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 9px;
+  color: var(--fg-muted);
+}
+.api-row:hover .api-send {
+  display: flex;
+}
+.api-send:hover {
+  background: var(--selection);
+  color: var(--fg);
+}
+.api-env-row .api-env-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fg-faint);
+  flex-shrink: 0;
+}
+.api-env-row.active .api-env-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.api-env-row.active .api-name {
+  color: var(--accent);
+}
+.api-edit-env {
+  margin: 12px 14px;
+  width: calc(100% - 28px);
+}
+.api-hist-status {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+.api-hist-time {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  color: var(--fg-faint);
+  min-width: 44px;
+  text-align: right;
+}
+.api-clear-history {
+  margin: 10px 14px;
+}
+
 /* ---------- glass effect: overlays ---------- */
 /* Unlike the chrome bars (layout.css), these sit above the editor with a real
    z-index, so the blur actually shows the content behind them through frosted

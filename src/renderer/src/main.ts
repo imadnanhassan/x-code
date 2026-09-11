@@ -37,6 +37,7 @@ import { initGitBlame, toggleGitBlame } from './features/gitBlame'
 import { initSpellCheck } from './features/spellCheck'
 import { initLivePreview, toggleLivePreview, previewCurrentFile } from './features/livePreview'
 import { initApiClient, newRequestFile } from './features/apiClient'
+import { initApiPanel } from './features/apiPanel'
 
 async function boot(): Promise<void> {
   await store.load()
@@ -62,6 +63,7 @@ async function boot(): Promise<void> {
   initSpellCheck()
   initLivePreview()
   initApiClient()
+  initApiPanel()
   initUpdater()
   await initTerminal()
   if (store.settings.emmet) void enableEmmet()
@@ -96,6 +98,7 @@ function registerAllCommands(): void {
     { id: 'view.explorer', title: 'Show Explorer', category: 'View', run: () => showView('explorer') },
     { id: 'view.search', title: 'Show Search', category: 'View', run: () => { showView('search'); focusSearch() } },
     { id: 'view.git', title: 'Show Source Control', category: 'View', run: () => showView('git') },
+    { id: 'view.api', title: 'Show API Client', category: 'View', run: () => showView('api') },
     { id: 'git.commit', title: 'Commit', category: 'Git', run: () => bus.emit('command:run', 'view.git') },
     { id: 'git.push', title: 'Push', category: 'Git', run: () => bus.emit('git:action', 'push') },
     { id: 'git.pull', title: 'Pull', category: 'Git', run: () => bus.emit('git:action', 'pull') },

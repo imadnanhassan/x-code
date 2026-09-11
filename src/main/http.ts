@@ -1,4 +1,6 @@
-import { ipcMain } from 'electron'
+import { app, ipcMain } from 'electron'
+import { promises as fs } from 'fs'
+import { dirname, join } from 'path'
 
 export interface HttpResult {
   ok: boolean
@@ -9,6 +11,33 @@ export interface HttpResult {
   timeMs?: number
   size?: number
   error?: string
+}
+
+export interface ApiHistoryEntry {
+  id: string
+  method: string
+  url: string
+  ok: boolean
+  status?: number
+  timeMs?: number
+  size?: number
+  at: number
+}
+
+const HISTORY_FILE = join(app.getPath('userData'), 'api-history.json')
+const MAX_HISTORY = 200
+
+async function readJson<T>(file: string, fallback: T): Promise<T> {
+  try {
+    return JSON.parse(await fs.readFile(file, 'utf8')) as T
+  } catch {
+    return fallback
+  }
+}
+
+async function writeJson(file: string, data: unknown): Promise<void> {
+  await fs.mkdir(dirname(file), { recursive: true })
+  await fs.writeFile(file, JSON.stringify(data), 'utf8')
 }
 
 export function registerHttp(): void {
@@ -53,4 +82,16 @@ export function registerHttp(): void {
       }
     }
   )
+
+  ipcMain.handle('apiHistory:list', async () => readJson<ApiHistoryEntry[]>(HISTORY_FILE, []))
+  ipcMain.handle('apiHistory:record', async (_e, entry: ApiHistoryEntry) => {
+    const list = await readJson<ApiHistoryEntry[]>(HISTORY_FILE, [])
+    list.unshift(entry)
+    await writeJson(HISTORY_FILE, list.slice(0, MAX_HISTORY))
+    return true
+  })
+  ipcMain.handle('apiHistory:clear', async () => {
+    await writeJson(HISTORY_FILE, [])
+    return true
+  })
 }

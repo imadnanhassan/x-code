@@ -99,6 +99,7 @@ export interface WorkspaceState {
   recentFolders?: RecentFolder[]
   openFiles?: string[]
   activeFile?: string
+  apiActiveEnv?: Record<string, string>
 }
 
 class Store {

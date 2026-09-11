@@ -137,6 +137,21 @@ const api = {
     }): Promise<any> => ipcRenderer.invoke('http:send', req)
   },
 
+  apiHistory: {
+    list: (): Promise<any[]> => ipcRenderer.invoke('apiHistory:list'),
+    record: (entry: {
+      id: string
+      method: string
+      url: string
+      ok: boolean
+      status?: number
+      timeMs?: number
+      size?: number
+      at: number
+    }): Promise<boolean> => ipcRenderer.invoke('apiHistory:record', entry),
+    clear: (): Promise<boolean> => ipcRenderer.invoke('apiHistory:clear')
+  },
+
   spell: {
     check: (words: string[]): Promise<{ ok: boolean; bad: string[]; error?: string }> =>
       ipcRenderer.invoke('spell:check', { words }),
