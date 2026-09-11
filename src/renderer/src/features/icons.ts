@@ -205,6 +205,10 @@ export function fileIcon(name: string): string {
     return docSvg(f.color, f.label)
   }
   if (lower.endsWith('.d.ts')) return docSvg(EXT_MAP['d.ts'].color, 'TS')
+  // .env.local / .env.example / .env.production etc. — lastIndexOf('.') would
+  // otherwise grab the trailing segment ("example", "local", ...) as a bogus
+  // "extension" and fall through to the generic grey icon below.
+  if (lower.startsWith('.env')) return docSvg(EXT_MAP.env.color, EXT_MAP.env.label)
   const dot = lower.lastIndexOf('.')
   const ext = dot > 0 ? lower.slice(dot + 1) : ''
   const info = EXT_MAP[ext] || (ext ? { color: DEFAULT_FILE.color, label: ext.slice(0, 3).toUpperCase() } : DEFAULT_FILE)
